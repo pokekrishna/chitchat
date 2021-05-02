@@ -15,13 +15,11 @@ type User struct {
 
 func UserByEmail(email string) (u *User, err error){
 	u = &User{}
-	row, err := db.Query(
+	row := db.QueryRow(
 		"Select id, uuid, name, email, password, created_at FROM users where email=$1",
 		email)
-	if err != nil {
-		return
-	}
-	if err= row.Scan(&u.Id, &u.Uuid, &u.Name, &u.Email, &u.Password, &u.CreatedAt); err != nil{
+
+	if err = row.Scan(&u.Id, &u.Uuid, &u.Name, &u.Email, &u.Password, &u.CreatedAt); err != nil {
 		return
 	}
 	return
