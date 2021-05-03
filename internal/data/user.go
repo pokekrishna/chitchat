@@ -1,6 +1,8 @@
 package data
 
 import (
+	"database/sql"
+	"github.com/pokekrishna/chitchat/pkg/log"
 	"time"
 )
 
@@ -10,6 +12,14 @@ type User struct {
 	Name      string
 	Email     string
 	Password  string
+	CreatedAt time.Time
+}
+
+type Session struct {
+	Id int
+	Uuid string
+	Email string
+	UserId int
 	CreatedAt time.Time
 }
 
@@ -25,4 +35,29 @@ func UserByEmail(email string) (u *User, err error){
 	return
 }
 
+func (u *User) CreateSession() (s *Session, err error){
+	// insert into db
+	s = &Session{}
+	var stmt *sql.Stmt
+	query := "insert into sessions (uuid, email, user_id, created_at) values ($1, $2, $3, $4) returning id, uuid, email, user_id, created_at"
+	stmt, err = db.Prepare(query)
+	if err != nil {
+		log.Error("Cannot prepare stmt", err)
+		return
+	}
+	defer stmt.Close()
+
+	err = stmt.QueryRow(createUUID(),
+		u.Email,
+		u.Id,
+		time.Now(),
+	).Scan(&s.Id, &s.Uuid, &s.Email, &s.UserId, &s.CreatedAt)
+	if err != nil {
+		log.Error("Cannot scan back created session", err)
+		return
+	} else {
+		log.Info("Session created for user email", u.Email)
+	}
+	return
+}
 

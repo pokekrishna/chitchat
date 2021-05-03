@@ -1,7 +1,6 @@
 package httpserver
 
 import (
-	"fmt"
 	"github.com/pokekrishna/chitchat/internal/data"
 	"github.com/pokekrishna/chitchat/pkg/log"
 	"net/http"
@@ -21,12 +20,22 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if u.Password == data.Encrypt(r.PostFormValue("password")) {
-		// user authenticated
-		_, err = w.Write([]byte (fmt.Sprintf("Welcome, %s!", u.Name)))
+		log.Info("Authentication successful for user email", u.Email)
+		// create a session
+		s, err := u.CreateSession()
 		if err != nil {
-			log.Error("cannot write response", err)
+			log.Error("Cannot create session", err)
 		}
+
+		// create a cookie based on session
+		cookie := http.Cookie{
+			Name: "_cookie",
+			Value: s.Uuid,
+			HttpOnly: true,
+		}
+		http.SetCookie(w, &cookie)
+		http.Redirect(w, r, "/", 302)
+	} else {
+		http.Redirect (w, r, "/login", 302)
 	}
-
-
 }
