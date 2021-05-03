@@ -1,6 +1,7 @@
 package httpserver
 
 import (
+	"fmt"
 	"github.com/pokekrishna/chitchat/internal/data"
 	"github.com/pokekrishna/chitchat/pkg/log"
 	"net/http"
@@ -12,18 +13,20 @@ func index(w http.ResponseWriter, r *http.Request){
 		log.Error("Cannot get threads", err)
 	}
 
-	if isValidSession(r){
+	if session, ok := isValidSession(r); ok{
 		err = generateHTML(w, threads,
 			"layout.html", "private.navbar.html", "index.html")
 		if err != nil {
-			// TODO: respond using err handler
+			http.Redirect(w, r, fmt.Sprintf("/err?msg=%s", "Some problem occured"), 302)
 		}
+		log.Info("session validated for user email:", session.Email)
 	} else {
 		err = generateHTML(w, threads,
 			"layout.html", "public.navbar.html", "index.html")
 		if err != nil {
-			// TODO: respond using err handler
+			http.Redirect(w, r, fmt.Sprintf("/err?msg=%s", "Some problem occured"), 302)
 		}
+		log.Info("invalid session")
 
 	}
 

@@ -43,7 +43,7 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 }
 
 // Check if the session id is valid
-func isValidSession(r *http.Request) (ok bool){
+func isValidSession(r *http.Request) (session *data.Session, ok bool){
 	ok = false
 	// get the session from the cookie
 	cookie, err := r.Cookie(cookieName)
@@ -53,12 +53,14 @@ func isValidSession(r *http.Request) (ok bool){
 	}
 
 	// find the session object by the uuid from the cookie
-	_, err = data.SessionByUuid(cookie.Value)
+	session, err = data.SessionByUuid(cookie.Value)
 	if err != nil {
 		// there was a problem in finding the session, hence invalid session
 		// Log the error and return accordingly
 		log.Warn("Cannot find session by Uuid:", cookie.Value)
 		return
+	} else {
+		ok = true
 	}
 	return
 }
