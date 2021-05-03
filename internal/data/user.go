@@ -61,3 +61,13 @@ func (u *User) CreateSession() (s *Session, err error){
 	return
 }
 
+func SessionByUuid(Uuid string) (s *Session, err error) {
+	s = &Session{}
+	err = db.QueryRow("select id, uuid, email, user_id, created_at from sessions where uuid=$1",
+		Uuid).Scan(&s.Id, &s.Uuid, &s.Email, &s.UserId, &s.CreatedAt)
+	if err != nil {
+		return
+	}
+	return
+}
+

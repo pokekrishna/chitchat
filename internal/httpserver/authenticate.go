@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+var cookieName = "_cookie"
+
 func authenticate(w http.ResponseWriter, r *http.Request) {
 	// user authentication here with DB reconciliation
 	if err := r.ParseForm(); err != nil {
@@ -29,7 +31,7 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 
 		// create a cookie based on session
 		cookie := http.Cookie{
-			Name: "_cookie",
+			Name: cookieName,
 			Value: s.Uuid,
 			HttpOnly: true,
 		}
@@ -38,4 +40,25 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.Redirect (w, r, "/login", 302)
 	}
+}
+
+// Check if the session id is valid
+func isValidSession(r *http.Request) (ok bool){
+	ok = false
+	// get the session from the cookie
+	cookie, err := r.Cookie(cookieName)
+	if err != nil {
+		log.Info("Cannot find cookie from the request object")
+		return
+	}
+
+	// find the session object by the uuid from the cookie
+	_, err = data.SessionByUuid(cookie.Value)
+	if err != nil {
+		// there was a problem in finding the session, hence invalid session
+		// Log the error and return accordingly
+		log.Warn("Cannot find session by Uuid:", cookie.Value)
+		return
+	}
+	return
 }
