@@ -29,5 +29,4 @@ func index(w http.ResponseWriter, r *http.Request){
 		log.Info("invalid session")
 
 	}
-
 }

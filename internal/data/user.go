@@ -71,3 +71,18 @@ func SessionByUuid(Uuid string) (s *Session, err error) {
 	return
 }
 
+func (s *Session)DeleteSessionByUuid() (err error) {
+	query := "Delete from sessions where uuid=$1"
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(s.Uuid)
+	if err != nil {
+		return
+	}
+	return
+}
+

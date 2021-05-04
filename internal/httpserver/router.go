@@ -14,6 +14,7 @@ func Router() *http.ServeMux {
 	mux.HandleFunc("/", index)
 	mux.HandleFunc("/err", errHandler)
 	mux.HandleFunc("/login", login)
+	mux.HandleFunc("/logout", logout)
 	mux.HandleFunc("/authenticate", authenticate)
 
 	return mux

@@ -64,3 +64,25 @@ func isValidSession(r *http.Request) (session *data.Session, ok bool){
 	}
 	return
 }
+
+func login(w http.ResponseWriter,r *http.Request) {
+	t := parseTemplateFiles("login.layout.html", "public.navbar.html", "login.html")
+	err := t.Execute(w, nil)
+	if  err != nil {
+		writeErrorToClient("Some error occurred. Please try later.", w)
+		log.Error(err)
+	}
+}
+
+func logout(w http.ResponseWriter, r *http.Request){
+	// invalidate session
+	// redirect to "/"
+	if s, ok := isValidSession(r); ok {
+		// so invalidate the session
+		err := s.DeleteSessionByUuid()
+		if err != nil {
+			log.Error("Error deleting session from DB", err)
+		}
+	}
+	http.Redirect(w, r, "/", 302)
+}
