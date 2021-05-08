@@ -42,7 +42,7 @@ func Encrypt(plainText string) (encryptedText string) {
 
 // create a random UUID with from RFC 4122
 // adapted from http://github.com/nu7hatch/gouuid
-func createUUID() (uuid string) {
+func CreateUUID() (uuid string) {
 	u := new([16]byte)
 	_, err := rand.Read(u[:])
 	if err != nil {

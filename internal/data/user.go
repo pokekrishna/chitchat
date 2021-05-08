@@ -47,7 +47,7 @@ func (u *User) CreateSession() (s *Session, err error){
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow(createUUID(),
+	err = stmt.QueryRow(CreateUUID(),
 		u.Email,
 		u.Id,
 		time.Now(),
