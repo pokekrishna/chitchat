@@ -86,3 +86,16 @@ func (s *Session)DeleteSessionByUuid() (err error) {
 	return
 }
 
+func DeleteAllSessions() (rowsAffected int64, err error){
+	query := "delete FROM sessions"
+	result, err := db.Exec(query)
+	if err != nil{
+		return
+	}
+	rowsAffected, err = result.RowsAffected()
+	if err != nil {
+		return
+	}
+	return
+}
+

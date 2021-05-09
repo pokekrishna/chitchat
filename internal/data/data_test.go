@@ -6,6 +6,7 @@ import (
 )
 
 func TestMain(m *testing.M){
+	// create DB connection but not test it
 	err := data.Initialize()
 	if err != nil {
 		panic("cannot initialize db")
@@ -21,7 +22,6 @@ func TestCreateUUID(t *testing.T) {
 	}
 }
 
-
 func TestEncrypt(t *testing.T) {
 	got := data.Encrypt("hello")
 	expected := "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d"
@@ -31,8 +31,5 @@ func TestEncrypt(t *testing.T) {
 }
 
 func cleanDB(){
-	deleteAllSessions()
-}
-
-func deleteAllSessions() {
+	data.DeleteAllSessions()
 }

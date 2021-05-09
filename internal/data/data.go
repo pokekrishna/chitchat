@@ -14,6 +14,11 @@ import (
 
 var db *sql.DB
 func Initialize() error {
+	if db != nil{
+		return nil
+		log.Info("Looks like DB connection has already been opened. Not creating a new one.")
+	}
+
 	var err error
 	log.Info("Initializing DB ... ")
 	postgresConnectionURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable&connect_timeout=5",
