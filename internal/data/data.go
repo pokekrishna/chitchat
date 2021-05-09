@@ -2,13 +2,13 @@ package data
 
 import (
 	"context"
+	"crypto/rand"
 	"crypto/sha1"
 	"database/sql"
 	"fmt"
+	_ "github.com/lib/pq"
 	"github.com/pokekrishna/chitchat/internal/config"
 	"github.com/pokekrishna/chitchat/pkg/log"
-	_ "github.com/lib/pq"
-	"crypto/rand"
 	"time"
 )
 
