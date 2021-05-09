@@ -14,6 +14,7 @@ func TestMain(m *testing.M){
 
 	cleanDB()
 	m.Run()
+	cleanDB()
 }
 
 func TestCreateUUID(t *testing.T) {
@@ -32,4 +33,5 @@ func TestEncrypt(t *testing.T) {
 
 func cleanDB(){
 	data.DeleteAllSessions()
+	data.DeleteAllUsers()
 }

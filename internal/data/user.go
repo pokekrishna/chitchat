@@ -3,6 +3,7 @@ package data
 import (
 	"database/sql"
 	"github.com/pokekrishna/chitchat/pkg/log"
+	"strings"
 	"time"
 )
 
@@ -99,3 +100,54 @@ func DeleteAllSessions() (rowsAffected int64, err error){
 	return
 }
 
+func DeleteAllUsers() (rowsAffected int64, err error){
+	query := "delete FROM users"
+	result, err := db.Exec(query)
+	if err != nil{
+		return
+	}
+	rowsAffected, err = result.RowsAffected()
+	if err != nil {
+		return
+	}
+	return
+}
+
+func (u *User) Create() (user *User, err error){
+	user = &User{}
+	if err = u.Validate(); err != nil{
+		return
+	}
+
+	query := "insert INTO users (uuid, name, email, password, created_at) values ($1, $2, $3, $4, $5) returning " +
+		"id, uuid, name, email, password, created_at"
+	stmt , err := db.Prepare(query)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	err = stmt.QueryRow(CreateUUID(), u.Name, u.Email, Encrypt(u.Password), time.Now()).Scan(
+		&user.Id, &user.Uuid, &user.Name, &user.Email, &user.Password, &user.CreatedAt)
+	if err != nil {
+		return
+	}
+	log.Info("User created: ", user)
+	return
+}
+
+func (u *User) Validate() (err error){
+	if u.Name == ""{
+		return &InvalidUser{Reason: "Empty Name"}
+	}
+
+	if u.Password == "" {
+		return &InvalidUser{Reason: "Password not set"}
+	}
+
+	// simple email validation
+	if u.Email == "" && !strings.Contains(u.Email, "@") {
+		return &InvalidUser{Reason: "Email not valid"}
+	}
+	return
+}
