@@ -40,7 +40,7 @@ func TestUser_Validate(t *testing.T) {
 
 func TestUser_Create(t *testing.T) {
 	for _, ut := range userTest{
-		if _, err := ut.u.Create(); !enhancederror.IsEqual(err, ut.expected) {
+		if err := ut.u.Create(); !enhancederror.IsEqual(err, ut.expected) {
 			t.Errorf("%v.Create() returned %v, expected %v.",
 				ut.u, err, ut.expected)
 		}

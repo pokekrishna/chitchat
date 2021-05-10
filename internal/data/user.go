@@ -113,8 +113,7 @@ func DeleteAllUsers() (rowsAffected int64, err error){
 	return
 }
 
-func (u *User) Create() (user *User, err error){
-	user = &User{}
+func (u *User) Create() (err error){
 	if err = u.Validate(); err != nil{
 		return
 	}
@@ -128,11 +127,11 @@ func (u *User) Create() (user *User, err error){
 	defer stmt.Close()
 
 	err = stmt.QueryRow(CreateUUID(), u.Name, u.Email, Encrypt(u.Password), time.Now()).Scan(
-		&user.Id, &user.Uuid, &user.Name, &user.Email, &user.Password, &user.CreatedAt)
+		&u.Id, &u.Uuid, &u.Name, &u.Email, &u.Password, &u.CreatedAt)
 	if err != nil {
 		return
 	}
-	log.Info("User created: ", user)
+	log.Info("User created: ", u)
 	return
 }
 
