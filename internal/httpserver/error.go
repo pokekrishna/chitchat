@@ -17,7 +17,7 @@ func errHandler(w http.ResponseWriter, r *http.Request){
 		}
 	} else {
 		err := generateHTML(w, queryParams.Get("msg"),
-			"layout.html", "error.html", "public.navbar")
+			"layout.html", "error.html", "public.navbar.html")
 		if err != nil {
 			log.Error("Error generating html from errorHandler", err)
 		}
