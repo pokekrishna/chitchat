@@ -8,7 +8,8 @@ func Router() *http.ServeMux {
 	// The following directory is relative to the location where the
 	// main program is being run from.
 	files := http.FileServer(http.Dir("internal/httpserver/static"))
-	mux.Handle("/static/", http.StripPrefix("/static/", files))
+	staticHandler:= http.StripPrefix("/static/", files)
+	mux.HandleFunc("/static/", logHandler(staticHandler.(http.HandlerFunc)))
 
 
 	mux.HandleFunc("/", logHandler(index))
