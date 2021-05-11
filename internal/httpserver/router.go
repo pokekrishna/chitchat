@@ -11,11 +11,11 @@ func Router() *http.ServeMux {
 	mux.Handle("/static/", http.StripPrefix("/static/", files))
 
 
-	mux.HandleFunc("/", index)
-	mux.HandleFunc("/err", errHandler)
-	mux.HandleFunc("/login", login)
-	mux.HandleFunc("/logout", logout)
-	mux.HandleFunc("/authenticate", authenticate)
+	mux.HandleFunc("/", logHandler(index))
+	mux.HandleFunc("/err", logHandler(errHandler))
+	mux.HandleFunc("/login", logHandler(login))
+	mux.HandleFunc("/logout", logHandler(logout))
+	mux.HandleFunc("/authenticate", logHandler(authenticate))
 
 	return mux
 }
