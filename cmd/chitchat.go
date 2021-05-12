@@ -6,9 +6,14 @@ import (
 	"github.com/pokekrishna/chitchat/internal/httpserver"
 	"github.com/pokekrishna/chitchat/pkg/log"
 	"net/http"
+	"os"
+	"os/signal"
 )
 
 func main() {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+
 	log.Initialize(config.GetLogLevel())
 	if err := data.Initialize(); err != nil {
 		panic(err)
@@ -20,6 +25,19 @@ func main() {
 	}
 
 	log.Info("Starting Server ...")
-	server.ListenAndServe()
 
+	// TODO: implement graceful shutdown in httpserver and defer it here
+	defer log.Info("Shutdown Server.")
+
+
+	go func() {
+		if err := server.ListenAndServe(); err != nil{
+			log.Error("Cannot start the http server.", err)
+			os.Exit(1)
+		}
+	}()
+
+	// wait for os.Interrupt
+	s := <-c
+	log.Info("Received signal:", s)
 }
