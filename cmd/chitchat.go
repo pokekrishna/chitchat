@@ -25,10 +25,8 @@ func main() {
 	}
 
 	log.Info("Starting Server ...")
-
-	// TODO: implement graceful shutdown in httpserver and defer it here
 	defer log.Info("Shutdown Server.")
-
+	// TODO: implement graceful shutdown in httpserver and defer it instead of the above call.
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil{
