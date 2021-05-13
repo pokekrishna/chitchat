@@ -1,6 +1,7 @@
 package httpserver
 
 import (
+	"context"
 	"fmt"
 	"github.com/pokekrishna/chitchat/pkg/log"
 	"net/http"
@@ -24,4 +25,18 @@ func logHandler(handler func(http.ResponseWriter, *http.Request)) func(http.Resp
 		log.Info(fmt.Sprintf("Handler function called - %s", name))
 		handler(w, r)
 	}
+}
+
+// Shutdown initiates graceful shutdown and can help perform clean up tasks before server shutdown
+func Shutdown(ctx context.Context, server * http.Server) error {
+	log.Info("Shutting down Server...")
+
+	// FUTURE: perform clean up tasks here
+
+	if err := server.Shutdown(ctx); err != nil{
+		// Error from closing listeners or context error
+		log.Error("HTTP server shutdown", err)
+		return err
+	}
+	return nil
 }

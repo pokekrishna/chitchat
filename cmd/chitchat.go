@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/pokekrishna/chitchat/internal/config"
 	"github.com/pokekrishna/chitchat/internal/data"
 	"github.com/pokekrishna/chitchat/internal/httpserver"
@@ -24,12 +25,13 @@ func main() {
 		Handler: httpserver.Router(),
 	}
 
+	ctx := context.Background()
+
 	log.Info("Starting Server ...")
-	defer log.Info("Shutdown Server.")
-	// TODO: implement graceful shutdown in httpserver and defer it instead of the above call.
+	defer httpserver.Shutdown(ctx, server)
 
 	go func() {
-		if err := server.ListenAndServe(); err != nil{
+		if err := server.ListenAndServe(); err != http.ErrServerClosed{
 			log.Error("Cannot start the http server.", err)
 			os.Exit(1)
 		}
