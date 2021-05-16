@@ -1,22 +1,24 @@
 package httpserver
 
-import "net/http"
+import (
+	"github.com/gorilla/mux"
+	"net/http"
+)
 
-func Router() *http.ServeMux {
-	mux := http.NewServeMux()
+func Router() *mux.Router {
+	router := mux.NewRouter()
 
 	// The following directory is relative to the location where the
 	// main program is being run from.
 	files := http.FileServer(http.Dir("internal/httpserver/static"))
 	staticHandler:= http.StripPrefix("/static/", files)
-	mux.HandleFunc("/static/", logHandler(staticHandler.(http.HandlerFunc)))
+	router.PathPrefix("/static/").HandlerFunc(logHandler(staticHandler.(http.HandlerFunc))).Methods(http.MethodGet)
 
+	router.HandleFunc("/", logHandler(index)).Methods(http.MethodGet)
+	router.HandleFunc("/err", logHandler(errHandler)).Methods(http.MethodGet)
+	router.HandleFunc("/login", logHandler(login)).Methods(http.MethodGet)
+	router.HandleFunc("/logout", logHandler(logout)).Methods(http.MethodGet)
+	router.HandleFunc("/authenticate", logHandler(authenticate)).Methods(http.MethodPost)
 
-	mux.HandleFunc("/", logHandler(index))
-	mux.HandleFunc("/err", logHandler(errHandler))
-	mux.HandleFunc("/login", logHandler(login))
-	mux.HandleFunc("/logout", logHandler(logout))
-	mux.HandleFunc("/authenticate", logHandler(authenticate))
-
-	return mux
+	return router
 }
