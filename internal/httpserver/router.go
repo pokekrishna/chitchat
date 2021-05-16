@@ -12,13 +12,13 @@ func Router() *mux.Router {
 	// main program is being run from.
 	files := http.FileServer(http.Dir("internal/httpserver/static"))
 	staticHandler:= http.StripPrefix("/static/", files)
-	router.PathPrefix("/static/").HandlerFunc(logHandler(staticHandler.(http.HandlerFunc)))
+	router.PathPrefix("/static/").HandlerFunc(logHandler(staticHandler.(http.HandlerFunc))).Methods(http.MethodGet)
 
-	router.HandleFunc("/", logHandler(index))
-	router.HandleFunc("/err", logHandler(errHandler))
-	router.HandleFunc("/login", logHandler(login))
-	router.HandleFunc("/logout", logHandler(logout))
-	router.HandleFunc("/authenticate", logHandler(authenticate))
+	router.HandleFunc("/", logHandler(index)).Methods(http.MethodGet)
+	router.HandleFunc("/err", logHandler(errHandler)).Methods(http.MethodGet)
+	router.HandleFunc("/login", logHandler(login)).Methods(http.MethodGet)
+	router.HandleFunc("/logout", logHandler(logout)).Methods(http.MethodGet)
+	router.HandleFunc("/authenticate", logHandler(authenticate)).Methods(http.MethodPost)
 
 	return router
 }
