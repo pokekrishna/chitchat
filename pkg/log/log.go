@@ -7,7 +7,7 @@ const (
 	_error ="ERROR:"
 	_warn ="WARN:"
 
-	maxLogLevel = 3
+	MaxLogLevel = 3
 )
 
 // logLevel sets the verbosity of the logging.
@@ -18,8 +18,10 @@ var logLevel int
 
 // Initialize the package with a log `level`
 func Initialize(level int) {
-	if level > maxLogLevel {
-		level = maxLogLevel
+	if level < 0{
+		level = 0
+	} else if level > MaxLogLevel {
+		level = MaxLogLevel
 	}
 
 	// set logLevel only if it is not set already
@@ -29,6 +31,17 @@ func Initialize(level int) {
 		Warn("Package log Initialized more than once, log level remains unchanged. Level:",
 			logLevel)
 	}
+
+
+}
+// ResetForTests resets the package as if Initialize() was never called.
+// Convenience method for testing. This should only be called from tests.
+func ResetForTests(){
+	logLevel = 0
+}
+
+func GetLevel() int {
+	return logLevel
 }
 
 func isInitialized() bool {
