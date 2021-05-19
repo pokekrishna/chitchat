@@ -12,3 +12,4 @@ Inspired by https://github.com/sausheong/gwp
 - Implement APIs, parallel to web app
 - Implement file upload and test out the context to cancel the process
 - Add more test coverage, preferably mocking.
+- search for TODO in code

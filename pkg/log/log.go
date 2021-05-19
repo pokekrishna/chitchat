@@ -16,6 +16,9 @@ const (
 // 3 is Info (including 2)
 var logLevel int
 
+type BasePrinter func(v ...interface{})
+var printer BasePrinter
+
 // Initialize the package with a log `level`
 func Initialize(level int) {
 	if level < 0{
@@ -26,13 +29,12 @@ func Initialize(level int) {
 
 	// set logLevel only if it is not set already
 	if logLevel == 0{
+		printer = log.Println
 		logLevel = level
 	} else {
 		Warn("Package log Initialized more than once, log level remains unchanged. Level:",
 			logLevel)
 	}
-
-
 }
 // ResetForTests resets the package as if Initialize() was never called.
 // Convenience method for testing. This should only be called from tests.
@@ -53,20 +55,19 @@ func isInitialized() bool {
 
 func Error(v ...interface{}){
 	if isInitialized() && logLevel >=1 {
-		log.Println(_error, v)
+		printer(_error, v)
 	}
-
 }
 
 func Warn(v ...interface{}) {
 	if isInitialized() && logLevel >= 2 {
-		log.Println(_warn, v)
+		printer(_warn, v)
 	}
 }
 
 func Info(v ...interface{}){
 	if isInitialized() && logLevel >=3 {
-		log.Println(_info, v)
+		printer(_info, v)
 	}
 }
 
