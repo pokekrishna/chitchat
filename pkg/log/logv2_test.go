@@ -20,8 +20,4 @@ func TestPlayground(t *testing.T){
 	if out := mockLogger.metaLogger.(*mockMetaLogger).out; out != "INFO: [foo]\n"{
 		t.Errorf("wanted 'INFO: [foo]\n', got '%s'", out)
 	}
-
-
-
-
 }

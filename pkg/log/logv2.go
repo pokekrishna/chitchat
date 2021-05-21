@@ -1,6 +1,8 @@
 package log
 
-import "log"
+import (
+	"log"
+)
 
 const (
 	_info ="INFO:"
@@ -10,7 +12,11 @@ const (
 	MaxLogLevel = 3
 )
 
-var defaultLogger *logger
+var (
+	defaultLogger *logger
+
+	Info = makeLogger((*logger).Info)
+)
 
 type metaLogger interface{
 	basePrinter(v ...interface{})
@@ -39,18 +45,35 @@ func (l *logger) isInitialized() bool {
 	return true
 }
 
+// TODO: why are methods exposed? starting with caps
+
 func (l *logger) Info(v ...interface{}) {
 	if l.isInitialized() && l.level >=3 {
 		l.basePrinter(_info, v)
 	}
 }
 
+func (l *logger) Error(v ...interface{}) {
+	if l.isInitialized() && l.level >=1 {
+		l.basePrinter(_error, v)
+	}
+}
+
+func (l *logger) Warn(v ...interface{}) {
+	if l.isInitialized() && l.level >=2 {
+		l.basePrinter(_warn, v)
+	}
+}
 func (m *implMetaLogger) basePrinter (v ...interface{}){
 	log.Println(v...)
 }
 
-// TODO : expose the methods as all logging functions to be used as <pkg_name>.<function_name>()
-	// TODO: would using an interface for exposed functions be useful, as a contract?
+// makeLogger takes in a method and returns an anonymous function called on defaultLogger
+func makeLogger(fn func(l *logger, v ... interface{})) func(...interface{}) {
+	return func(v ...interface{}) {
+		fn(defaultLogger, v...)
+	}
+}
 
 //Initialize the package with a log `level`
 func Initialize(level int) {
@@ -66,13 +89,14 @@ func Initialize(level int) {
 			level:      level,
 			metaLogger: &implMetaLogger{},
 		}
-	} //else {
-//		Warn("Package log Initialized more than once, log level remains unchanged. Level:",
-//			logLevel)
-//	}
+	} else {
+		defaultLogger.Warn("Package log Initialized more than once, log level remains unchanged. Level:",
+			defaultLogger.level)
+	}
 	// TODO: Complete the else branch ^^ once Warn() is onboarded, and function vs method is decided
 }
 
+// TODO: warning code smell, get level is not dependent on isInitialised, why?
 func GetLevel() int{
 	if defaultLogger != nil {
 		return defaultLogger.level

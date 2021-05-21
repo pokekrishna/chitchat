@@ -45,3 +45,16 @@ func TestInitialize(t *testing.T) {
 		})
 	}
 }
+
+// TestLogFunctions tests just the reach of the exposed version of the log functions.
+// Functionality of the functions are not to be tested here.
+func TestLogFunctions(t *testing.T){
+	log.ResetForTests()
+	log.Initialize(log.MaxLogLevel)
+	msg := "foo"
+
+	log.Info(msg)
+	//log.Error(msg)
+	//log.Warn(msg)
+}
+
