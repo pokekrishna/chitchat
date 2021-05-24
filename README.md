@@ -6,6 +6,9 @@ Inspired by https://github.com/sausheong/gwp
 ## Testing
 `$ make test`
 
+## Find ToDos
+`$ make todo`
+
 ## TODOs
 - Implement some more models, and use nested structs 
 - Use sqlx for easier data interaction
