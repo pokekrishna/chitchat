@@ -16,6 +16,8 @@ var (
 	defaultLogger *logger
 
 	Info = makeLogger((*logger).Info)
+	Error = makeLogger((*logger).Error)
+	Warn = makeLogger((*logger).Warn)
 )
 
 type metaLogger interface{

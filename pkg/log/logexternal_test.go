@@ -54,7 +54,7 @@ func TestLogFunctions(t *testing.T){
 	msg := "foo"
 
 	log.Info(msg)
-	//log.Error(msg)
-	//log.Warn(msg)
+	log.Error(msg)
+	log.Warn(msg)
 }
 
