@@ -95,7 +95,6 @@ func Initialize(level int) {
 		defaultLogger.Warn("Package log Initialized more than once, log level remains unchanged. Level:",
 			defaultLogger.level)
 	}
-	// TODO: Complete the else branch ^^ once Warn() is onboarded, and function vs method is decided
 }
 
 // TODO: warning code smell, get level is not dependent on isInitialised, why?
