@@ -20,6 +20,9 @@ var (
 	Warn = makeLogger((*logger).Warn)
 )
 
+// TODO: what are the justifications of having this interface? ...
+// TODO: ...if metaLogger interface wasn't there and only  implMetaLogger...
+// TODO: ... was there, would it cause any problem?
 type metaLogger interface{
 	basePrinter(v ...interface{})
 }
