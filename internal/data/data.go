@@ -12,20 +12,14 @@ import (
 	"time"
 )
 
-var db *sql.DB
-func Initialize() error {
-	if db != nil{
-		return nil
-		log.Info("Looks like DB connection has already been opened. Not creating a new one.")
-	}
-
+func Initialize() (*sql.DB, error) {
 	var err error
 	log.Info("Initializing DB ... ")
 	postgresConnectionURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable&connect_timeout=5",
 		config.GetDbUser(),config.GetDbPassword(),config.GetDbHost(), config.GetDbPort(), config.GetDbName())
-	db, err = sql.Open("postgres", postgresConnectionURL)
+	db, err := sql.Open("postgres", postgresConnectionURL)
 	if err != nil{
-		return err
+		return nil, err
 	}
 
 	// Wait until 5 seconds for ping
@@ -33,11 +27,11 @@ func Initialize() error {
 	defer cancel()
 
 	if err := db.PingContext(pingCtx); err != nil {
-		return err
+		return nil, err
 	}
 
 	log.Info("Done")
-	return nil
+	return db, nil
 }
 
 func Encrypt(plainText string) (encryptedText string) {

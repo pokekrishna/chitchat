@@ -1,11 +1,13 @@
 package httpserver
 
 import (
+	"database/sql"
 	"github.com/gorilla/mux"
+	"github.com/pokekrishna/chitchat/internal/data"
 	"net/http"
 )
 
-func Router() *mux.Router {
+func Router(db *sql.DB) *mux.Router {
 	router := mux.NewRouter()
 
 	// The following directory is relative to the location where the
@@ -14,7 +16,10 @@ func Router() *mux.Router {
 	staticHandler:= http.StripPrefix("/static/", files)
 	router.PathPrefix("/static/").HandlerFunc(logHandler(staticHandler.(http.HandlerFunc))).Methods(http.MethodGet)
 
-	router.HandleFunc("/", logHandler(index)).Methods(http.MethodGet)
+	t := data.NewThread(db)
+	indexHandler := logHandler(index(t))
+
+	router.HandleFunc("/", indexHandler).Methods(http.MethodGet)
 	router.HandleFunc("/err", logHandler(errHandler)).Methods(http.MethodGet)
 	router.HandleFunc("/login", logHandler(login)).Methods(http.MethodGet)
 	router.HandleFunc("/logout", logHandler(logout)).Methods(http.MethodGet)

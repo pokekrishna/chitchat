@@ -16,13 +16,14 @@ func main() {
 	signal.Notify(c, os.Interrupt)
 
 	log.Initialize(config.GetLogLevel())
-	if err := data.Initialize(); err != nil {
+	db, err := data.Initialize();
+	if err != nil {
 		panic(err)
 	}
 
 	server := &http.Server{
 		Addr: "0.0.0.0:8888",
-		Handler: httpserver.Router(),
+		Handler: httpserver.Router(db),
 	}
 
 	ctx := context.Background()

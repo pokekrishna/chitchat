@@ -1,14 +1,23 @@
 package httpserver
 
 import (
+	"github.com/pokekrishna/chitchat/internal/data"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
+type mockThread struct{}
+func (m *mockThread) FetchAll() ([]data.ThreadInterface, error) {
+	var threads []data.ThreadInterface
+	threads = append(threads, &mockThread{}, &mockThread{})
+	return threads, nil
+}
+
 func TestIndex(t *testing.T) {
+	m := &mockThread{}
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", index)
+	mux.HandleFunc("/", index(m))
 
 	t.Run("GET on '/' should return HTTP 200", func(t *testing.T) {
 		w := httptest.NewRecorder()
@@ -27,4 +36,3 @@ func TestIndex(t *testing.T) {
 	})
 
 }
-
