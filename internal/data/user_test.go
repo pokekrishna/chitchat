@@ -7,10 +7,10 @@ import (
 )
 
 var userTest = []struct {
-	u              data.User
+	u              data.user
 	expected error
 }{
-	{data.User{
+	{data.user{
 		Name:     "Peter Jones",
 		Email:    "peter@gmail.com",
 		Password: "peter_pass",
@@ -18,7 +18,7 @@ var userTest = []struct {
 	nil,
 	},
 	{
-		data.User{
+		data.user{
 			Name:     "John Smith",
 			Email:    "john@gmail.com",
 			Password: "",

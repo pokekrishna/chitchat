@@ -14,13 +14,14 @@ func index(t data.ThreadInterface) http.HandlerFunc {
 			log.Error("Cannot get threads", err)
 		}
 
-		if session, ok := isValidSession(r); ok {
+		s := data.NewSession(t.GetDB(), nil)
+		if ok := isValidSession(r, s); ok {
 			err = generateHTML(w, threads,
 				"layout.html", "private.navbar.html", "index.html")
 			if err != nil {
 				http.Redirect(w, r, fmt.Sprintf("/err?msg=%s", "Some problem occured"), 302)
 			}
-			log.Info("session validated for user email:", session.Email)
+			log.Info("session validated for user email:", s.GetEmail())
 		} else {
 			err = generateHTML(w, threads,
 				"layout.html", "public.navbar.html", "index.html")

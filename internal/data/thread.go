@@ -7,9 +7,10 @@ import (
 
 type ThreadInterface interface{
 	FetchAll() ([]ThreadInterface, error)
+	GetDB() *sql.DB
 }
 
-type Thread struct {
+type thread struct {
 	DB *sql.DB
 	Id int
 	Uuid string
@@ -19,13 +20,13 @@ type Thread struct {
 }
 
 func NewThread(db *sql.DB) ThreadInterface {
-	return &Thread{
+	return &thread{
 		DB: db,
 	}
 }
 
 // FetchAll return threads from the DB
-func (t *Thread) FetchAll() (threads []ThreadInterface, err error) {
+func (t *thread) FetchAll() (threads []ThreadInterface, err error) {
 	if t.DB == nil{
 		return nil, &InvalidDBConn{Reason: "db nil"}
 	}
@@ -35,7 +36,7 @@ func (t *Thread) FetchAll() (threads []ThreadInterface, err error) {
 	}
 
 	for rows.Next() {
-		th := &Thread{}
+		th := &thread{}
 		if err = rows.Scan(th.Id,
 			th.Uuid,
 			th.CreatedAt,
@@ -46,4 +47,8 @@ func (t *Thread) FetchAll() (threads []ThreadInterface, err error) {
 	}
 	rows.Close()
 	return
+}
+
+func (t *thread) GetDB() *sql.DB{
+	return t.DB
 }

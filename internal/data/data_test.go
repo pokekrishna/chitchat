@@ -7,14 +7,15 @@ import (
 
 func TestMain(m *testing.M){
 	// create DB connection but not test it
-	err := data.Initialize()
+	db, err := data.Initialize()
 	if err != nil {
 		panic("cannot initialize db")
 	}
 
 	cleanDB()
+	defer cleanDB()
 	m.Run()
-	cleanDB()
+
 }
 
 func TestCreateUUID(t *testing.T) {

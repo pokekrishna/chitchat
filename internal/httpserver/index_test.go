@@ -1,6 +1,7 @@
 package httpserver
 
 import (
+	"database/sql"
 	"github.com/pokekrishna/chitchat/internal/data"
 	"net/http"
 	"net/http/httptest"
@@ -12,6 +13,10 @@ func (m *mockThread) FetchAll() ([]data.ThreadInterface, error) {
 	var threads []data.ThreadInterface
 	threads = append(threads, &mockThread{}, &mockThread{})
 	return threads, nil
+}
+
+func (m *mockThread) GetDB() *sql.DB{
+	return nil
 }
 
 func TestIndex(t *testing.T) {
@@ -34,5 +39,4 @@ func TestIndex(t *testing.T) {
 			t.Error("Response code not", http.StatusOK)
 		}
 	})
-
 }
