@@ -1,13 +1,22 @@
 package data_test
 
 import (
+	"database/sql"
 	"github.com/pokekrishna/chitchat/internal/data"
 	"testing"
 )
 
+// db is a a global variable declared for the data_test package.
+// Although use of global variable is a design flaw, it is used
+// here because the `go test` utility does not allow more than
+// one parameter to the Test... functions other than the *testing.T
+// itself.
+var db *sql.DB
+
 func TestMain(m *testing.M){
 	// create DB connection but not test it
-	db, err := data.Initialize()
+	var err error
+	db, err = data.Initialize()
 	if err != nil {
 		panic("cannot initialize db")
 	}
@@ -33,6 +42,8 @@ func TestEncrypt(t *testing.T) {
 }
 
 func cleanDB(){
-	data.DeleteAllSessions()
-	data.DeleteAllUsers()
+	u := data.NewUser(db)
+	s := data.NewSession(db, u)
+	s.DeleteAllSessions()
+	u.DeleteAllUsers()
 }

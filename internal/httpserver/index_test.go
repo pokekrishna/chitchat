@@ -5,6 +5,7 @@ import (
 	"github.com/pokekrishna/chitchat/internal/data"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
@@ -25,6 +26,18 @@ func TestIndex(t *testing.T) {
 	mux.HandleFunc("/", index(m))
 
 	t.Run("GET on '/' should return HTTP 200", func(t *testing.T) {
+		cwd, err := os.Getwd()
+		if err != nil {
+			t.Errorf("Cannot get current working directory")
+			t.Fail()
+		}
+
+		if err := os.Chdir("../.."); err != nil {
+			t.Errorf("Cannot change directory")
+			t.Fail()
+		}
+		defer os.Chdir(cwd)
+
 		w := httptest.NewRecorder()
 		r, err := http.NewRequest("GET", "/", nil)
 		if err != nil {

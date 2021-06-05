@@ -44,14 +44,16 @@ type logger struct {
 type implMetaLogger struct {}
 
 func (l *logger) isInitialized() bool {
-	if l.level == 0 {
+	if l != nil{
+		if l.level != 0 {
+			return true
+		}
 		return false
 	}
-	return true
+	return false
 }
 
 // TODO: why are methods exposed? starting with caps
-
 func (l *logger) Info(v ...interface{}) {
 	if l.isInitialized() && l.level >=3 {
 		l.basePrinter(_info, v)

@@ -6,28 +6,29 @@ import (
 	"testing"
 )
 
-var userTest = []struct {
-	u              data.user
-	expected error
-}{
-	{data.user{
-		Name:     "Peter Jones",
-		Email:    "peter@gmail.com",
-		Password: "peter_pass",
-	},
-	nil,
-	},
-	{
-		data.user{
-			Name:     "John Smith",
-			Email:    "john@gmail.com",
-			Password: "",
-		},
-		&data.InvalidUser{Reason: "Password not set"},
-	},
-}
-
 func TestUser_Validate(t *testing.T) {
+	u1 := data.NewUser(db)
+	u1.SetName("Peter Jones")
+	u1.SetEmail("peter@gmail.com")
+	u1.SetPassword("peter_pass")
+
+	u2 := data.NewUser(db)
+	u2.SetName("John Smith")
+	u2.SetEmail("john@gmail.com")
+	u2.SetPassword("")
+	var userTest = []struct {
+		u              data.UserInterface
+		expected error
+	}{
+		{u1,
+			nil,
+		},
+		{
+			u2,
+			&data.InvalidUser{Reason: "Password not set"},
+		},
+	}
+
 	for _,ut := range userTest{
 		got := ut.u.Validate()
 		if !enhancederror.IsEqual(got, ut.expected){
@@ -39,11 +40,34 @@ func TestUser_Validate(t *testing.T) {
 }
 
 func TestUser_Create(t *testing.T) {
+	u1 := data.NewUser(db)
+	u1.SetName("Peter Jones")
+	u1.SetEmail("peter@gmail.com")
+	u1.SetPassword("peter_pass")
+
+	u2 := data.NewUser(db)
+	u2.SetName("John Smith")
+	u2.SetEmail("john@gmail.com")
+	u2.SetPassword("")
+	var userTest = []struct {
+		u              data.UserInterface
+		expected error
+	}{
+		{u1,
+			nil,
+		},
+		{
+			u2,
+			&data.InvalidUser{Reason: "Password not set"},
+		},
+	}
+
 	for _, ut := range userTest{
 		if err := ut.u.Create(); !enhancederror.IsEqual(err, ut.expected) {
 			t.Errorf("%v.Create() returned %v, expected %v.",
 				ut.u, err, ut.expected)
 		}
+		// TODO: select from DB to check the inserted value
 	}
 }
 

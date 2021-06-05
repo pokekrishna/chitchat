@@ -7,6 +7,11 @@ import (
 	"time"
 )
 
+// TODO: Something about these following interfaces ...
+// TODO: ...does not feel right. Only to mock out the db interactions...
+// TODO: ...these interfaces are so specific that they serve purpose of
+// TODO: ...only mocking and nothing else.
+// TODO: ...Figure out a way to solve this.
 type UserInterface interface{
 	FindByEmail(email string) (err error)
 	DeleteAllUsers() (rowsAffected int64, err error)
