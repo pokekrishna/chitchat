@@ -37,7 +37,7 @@ func TestInitialize(t *testing.T) {
 		t.Run(tc.name, func (t *testing.T){
 			log.ResetForTests()
 			log.Initialize(tc.setLevel)
-			got := log.GetLevel()
+			got := log.Level()
 			if tc.wantLevel != got {
 				t.Errorf("Initalize(%d) resulted in log level '%d'. Expected level '%d'",
 					tc.setLevel, got, tc.wantLevel)

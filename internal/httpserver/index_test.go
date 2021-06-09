@@ -16,7 +16,7 @@ func (m *mockThread) FetchAll() ([]data.ThreadInterface, error) {
 	return threads, nil
 }
 
-func (m *mockThread) GetDB() *sql.DB{
+func (m *mockThread) DB() *sql.DB{
 	return nil
 }
 

@@ -14,7 +14,7 @@ import (
 var db *sql.DB
 
 func TestMain(m *testing.M){
-	// create DB connection but not test it
+	// create db connection but not test it
 	var err error
 	db, err = data.Initialize()
 	if err != nil {

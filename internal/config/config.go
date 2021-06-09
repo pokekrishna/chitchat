@@ -10,26 +10,26 @@ const (
 )
 
 
-func GetDbHost() string {
+func DbHost() string {
 	return dbHost
 }
 
-func GetDbPort() string {
+func DbPort() string {
 	return dbPort
 }
 
-func GetDbName() string {
+func DbName() string {
 	return dbName
 }
 
-func GetDbUser() string {
+func DbUser() string {
 	return dbUser
 }
 
-func GetDbPassword() string {
+func DbPassword() string {
 	return dbPassword
 }
 
-func GetLogLevel() int {
+func LogLevel() int {
 	return logLevel
 }

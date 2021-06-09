@@ -12,7 +12,7 @@ const (
 
 func authenticate(u data.UserInterface) http.HandlerFunc {
 	return func (w http.ResponseWriter, r *http.Request) {
-		// user authentication here with DB reconciliation
+		// user authentication here with db reconciliation
 		if err := r.ParseForm(); err != nil {
 			log.Error("Cannot parse form", err)
 		}
@@ -24,10 +24,10 @@ func authenticate(u data.UserInterface) http.HandlerFunc {
 			writeErrorToClient(msg, w)
 		}
 
-		if u.GetPassword() == data.Encrypt(r.PostFormValue("password")) {
-			log.Info("Authentication successful for user email", u.GetEmail())
+		if u.Password() == data.Encrypt(r.PostFormValue("password")) {
+			log.Info("Authentication successful for user email", u.Email())
 			// create a session
-			s := data.NewSession(u.GetDB(), u)
+			s := data.NewSession(u.DB(), u)
 			err := s.Create()
 			if err != nil {
 				log.Error("Cannot create session", err)
@@ -36,7 +36,7 @@ func authenticate(u data.UserInterface) http.HandlerFunc {
 			// create a cookie based on session
 			cookie := http.Cookie{
 				Name:     cookieName,
-				Value:    s.Uuid,
+				Value:    s.Uuid(),
 				HttpOnly: true,
 			}
 			http.SetCookie(w, &cookie)
@@ -62,7 +62,7 @@ func isValidSession(r *http.Request, s data.SessionInterface)  bool{
 	if err != nil {
 		// there was a problem in finding the session, hence invalid session
 		// Log the error and return accordingly
-		log.Warn("Cannot find session by Uuid:", cookie.Value)
+		log.Warn("Cannot find session by uuid:", cookie.Value)
 		return ok
 	} else {
 		ok = true
@@ -88,7 +88,7 @@ func logout(s data.SessionInterface) http.HandlerFunc {
 			// so invalidate the session
 			err := s.Delete()
 			if err != nil {
-				log.Error("Error deleting session from DB", err)
+				log.Error("Error deleting session from db", err)
 			}
 		}
 		http.Redirect(w, r, "/", 302)

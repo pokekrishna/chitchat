@@ -32,7 +32,7 @@ func TestUser_Validate(t *testing.T) {
 	for _,ut := range userTest{
 		got := ut.u.Validate()
 		if !enhancederror.IsEqual(got, ut.expected){
-			t.Errorf("User validation failed for user: %v", ut.u)
+			t.Errorf("user validation failed for user: %v", ut.u)
 			t.Errorf("%v.Validate() returned %v, expected %v.",
 				ut.u, got, ut.expected)
 		}
@@ -67,7 +67,7 @@ func TestUser_Create(t *testing.T) {
 			t.Errorf("%v.Create() returned %v, expected %v.",
 				ut.u, err, ut.expected)
 		}
-		// TODO: select from DB to check the inserted value
+		// TODO: select from db to check the inserted value
 	}
 }
 

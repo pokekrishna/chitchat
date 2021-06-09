@@ -102,8 +102,7 @@ func Initialize(level int) {
 	}
 }
 
-// TODO: warning code smell, get level is not dependent on isInitialised, why?
-func GetLevel() int{
+func Level() int{
 	if defaultLogger != nil {
 		return defaultLogger.level
 	} else{

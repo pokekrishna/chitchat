@@ -7,11 +7,11 @@ type InvalidUser struct {
 }
 
 func (i *InvalidUser) Error() string {
-	return fmt.Sprintf("Invalid User: %s", i.Reason)
+	return fmt.Sprintf("Invalid user: %s", i.Reason)
 }
 
 type InvalidDBConn struct{Reason string}
 
 func (i *InvalidDBConn) Error() string{
-	return fmt.Sprintf("Invalid DB object: %s", i.Reason)
+	return fmt.Sprintf("Invalid db object: %s", i.Reason)
 }

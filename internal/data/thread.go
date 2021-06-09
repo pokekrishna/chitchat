@@ -7,39 +7,39 @@ import (
 
 type ThreadInterface interface{
 	FetchAll() ([]ThreadInterface, error)
-	GetDB() *sql.DB
+	DB() *sql.DB
 }
 
 type thread struct {
-	DB *sql.DB
-	Id int
-	Uuid string
-	Topic string
-	UserId int
-	CreatedAt time.Time
+	db        *sql.DB
+	id        int
+	uuid      string
+	topic     string
+	userId    int
+	createdAt time.Time
 }
 
 func NewThread(db *sql.DB) ThreadInterface {
 	return &thread{
-		DB: db,
+		db: db,
 	}
 }
 
 // FetchAll return threads from the DB
 func (t *thread) FetchAll() (threads []ThreadInterface, err error) {
-	if t.DB == nil{
+	if t.db == nil{
 		return nil, &InvalidDBConn{Reason: "db nil"}
 	}
-	rows, err := t.DB.Query("Select id, uuid, topic, user_id, created_at from threads order by created_at desc")
+	rows, err := t.db.Query("Select id, uuid, topic, user_id, created_at from threads order by created_at desc")
 	if err != nil {
 		return
 	}
 
 	for rows.Next() {
 		th := &thread{}
-		if err = rows.Scan(th.Id,
-			th.Uuid,
-			th.CreatedAt,
+		if err = rows.Scan(th.id,
+			th.uuid,
+			th.createdAt,
 			); err != nil{
 			return
 		}
@@ -49,6 +49,6 @@ func (t *thread) FetchAll() (threads []ThreadInterface, err error) {
 	return
 }
 
-func (t *thread) GetDB() *sql.DB{
-	return t.DB
+func (t *thread) DB() *sql.DB{
+	return t.db
 }
