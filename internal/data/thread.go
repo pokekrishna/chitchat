@@ -1,17 +1,12 @@
 package data
 
 import (
-	"database/sql"
+	"fmt"
 	"time"
 )
 
-type ThreadInterface interface{
-	FetchAll() ([]ThreadInterface, error)
-	DB() *sql.DB
-}
-
-type thread struct {
-	db        *sql.DB
+type Thread struct {
+	//db        *sql.DB
 	id        int
 	uuid      string
 	topic     string
@@ -19,36 +14,29 @@ type thread struct {
 	createdAt time.Time
 }
 
-func NewThread(db *sql.DB) ThreadInterface {
-	return &thread{
-		db: db,
-	}
-}
-
-// FetchAll return threads from the DB
-func (t *thread) FetchAll() (threads []ThreadInterface, err error) {
-	if t.db == nil{
+func (a *App) Threads() ([]*Thread, error) {
+	if a.DB == nil{
 		return nil, &InvalidDBConn{Reason: "db nil"}
 	}
-	rows, err := t.db.Query("Select id, uuid, topic, user_id, created_at from threads order by created_at desc")
+	rows, err := a.DB.Query("SELECT id, uuid, topic, user_id, created_at FROM threads order by created_at desc")
+	defer rows.Close()
 	if err != nil {
-		return
+		fmt.Println("flag1", err)
+		return nil, err
 	}
 
+	// TODO : make the underlying array of a known length
+	var threads []*Thread
 	for rows.Next() {
-		th := &thread{}
+		th := &Thread{}
 		if err = rows.Scan(th.id,
 			th.uuid,
 			th.createdAt,
 			); err != nil{
-			return
+			return threads, err
 		}
 		threads = append (threads, th)
 	}
-	rows.Close()
-	return
-}
 
-func (t *thread) DB() *sql.DB{
-	return t.db
+	return threads, nil
 }

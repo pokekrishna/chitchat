@@ -16,13 +16,15 @@ func Router(db *sql.DB) *mux.Router {
 	staticHandler:= http.StripPrefix("/static/", files)
 	router.PathPrefix("/static/").HandlerFunc(logHandler(staticHandler.(http.HandlerFunc))).Methods(http.MethodGet)
 
+	app := &data.App{
+		DB: db,
+	}
 	// TODO: is it safe to initialize models here and reuse ...
 	// TODO: ... from concurrency standpoint.
-	t := data.NewThread(db)
 	u := data.NewUser(db)
 	s := data.NewSession(db, u)
 
-	indexHandler := logHandler(index(t))
+	indexHandler := logHandler(index(app))
 	errHandlerHandler := logHandler(errHandler(s))
 	loginHandler := logHandler(login)
 	logoutHandler := logHandler(logout(s))
