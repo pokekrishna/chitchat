@@ -20,18 +20,7 @@ func TestIndex(t *testing.T) {
 	mux.HandleFunc("/", index(app))
 
 	t.Run("GET on '/' should return HTTP 200", func(t *testing.T) {
-		// TODO : move this DIR related acts to a function
-		cwd, err := os.Getwd()
-		if err != nil {
-			t.Errorf("Cannot get current working directory")
-			t.Fail()
-		}
-
-		if err := os.Chdir("../.."); err != nil {
-			t.Errorf("Cannot change directory")
-			t.Fail()
-		}
-		defer os.Chdir(cwd)
+		defer os.Chdir(ChangeDirForTest())
 
 		rows := sqlmock.NewRows([] string {"id", "uuid", "topic", "user_id", "created_at"}).
 			AddRow(1, "uuid-sample-1", "topic1", 2, "TIME1").

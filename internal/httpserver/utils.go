@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/pokekrishna/chitchat/pkg/log"
 	"net/http"
+	"os"
 	"reflect"
 	"runtime"
 )
@@ -39,4 +40,29 @@ func Shutdown(ctx context.Context, server * http.Server) error {
 		return err
 	}
 	return nil
+}
+
+// ChangeDirForTest is a convenience function for tests that changes the current
+// directory by going 2 steps up. or "../../" This is required because while
+// running the tests, go test command goes inside individual package dir. and
+// runs the tests. This is different from when the app is run. This change in
+// directory causes discrepancy in finding the template files.
+//
+// ChangeDirForTest returns the directory which was the directory before
+// executing this function. This is required because it is important for Test
+// functions to reset back the directory before completing the execution.
+// Preferred way to use this is mentioned below.
+//
+// Usage:
+//	defer os.Chdir(ChangeDirForTest())
+func ChangeDirForTest() string{
+	cwd, err := os.Getwd()
+	if err != nil {
+		panic("Cannot get current working directory")
+	}
+
+	if err := os.Chdir("../.."); err != nil {
+		panic("Cannot change directory")
+	}
+	return cwd
 }
