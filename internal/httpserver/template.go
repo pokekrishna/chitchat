@@ -7,24 +7,29 @@ import (
 	"text/template"
 )
 
-func parseTemplateFiles(filenames ...string) (t *template.Template){
+func parseTemplateFiles(filenames ...string) (*template.Template, error){
 	var files [] string
-	t = template.New("layout")
+	t := template.New("layout")
 	for _, file := range filenames {
 		files = append(files, fmt.Sprintf("internal/httpserver/templates/%s", file))
 	}
 	log.Info( "Parsing these files:", files)
-	t = template.Must(template.ParseFiles(files ...))
-	return
+	t, err := template.ParseFiles(files ...)
+	if err != nil{
+		return nil, err
+	}
+	return t, nil
 }
 
-// Genereates HTML and write to http responsewriter
-// takes in writer, data for template, and files to join
-func generateHTML(w http.ResponseWriter, data interface{}, filenames ...string) (err error){
-	t := parseTemplateFiles(filenames...)
+// generateHTML and parses templates and writes to http http.ResponseWriter
+func generateHTML(w http.ResponseWriter, data interface{}, filenames ...string) error{
+	t, err := parseTemplateFiles(filenames...)
+	if err != nil{
+		return err
+	}
 	err = t.Execute(w, data)
 	if err != nil {
-		return
+		return err
 	}
 	return nil
 }
