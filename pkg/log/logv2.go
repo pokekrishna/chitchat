@@ -13,7 +13,10 @@ const (
 )
 
 var (
-	defaultLogger *logger
+	defaultLogger             *logger = new(logger)
+
+	// Safe global variable. No data; only behavior on this type
+	defaultFallbackMetaLogger         = fallbackMetaLogger{}
 
 	Info = makeLogger((*logger).Info)
 	Error = makeLogger((*logger).Error)
@@ -43,13 +46,21 @@ type logger struct {
 // implMetaLogger is a simple implementation of the metaLogger interface
 type implMetaLogger struct {}
 
+type fallbackMetaLogger struct{}
+
+func (fml *fallbackMetaLogger) basePrinter (v ...interface{}) {
+	log.Println("Logger not Initialized. Use the Initialize function.")
+}
+
 func (l *logger) isInitialized() bool {
-	if l != nil{
-		if l.level != 0 {
+	if l.metaLogger != nil {
+		if l.level >= 0 {
 			return true
 		}
 		return false
 	}
+
+	defaultFallbackMetaLogger.basePrinter()
 	return false
 }
 
@@ -113,5 +124,5 @@ func Level() int{
 // ResetForTests resets the package as if Initialize() was never called.
 // Convenience method for testing. This should only be called from tests.
 func ResetForTests(){
-	defaultLogger = nil
+	defaultLogger = new(logger)
 }

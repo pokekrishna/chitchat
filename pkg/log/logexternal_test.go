@@ -57,4 +57,3 @@ func TestLogFunctions(t *testing.T){
 	log.Error(msg)
 	log.Warn(msg)
 }
-

@@ -1,9 +1,12 @@
 package log
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"reflect"
 	"runtime"
+	"strings"
 	"testing"
 )
 
@@ -69,6 +72,38 @@ func TestLogFunctions(t *testing.T) {
 	}
 }
 
+func TestIsInitialized(t *testing.T) {
+	t.Run("When logger is not initialized, isInitialized should return false ", func(t *testing.T) {
+			oldDefaultLogger := defaultLogger
+			ResetForTests()
+			defer func() {defaultLogger = oldDefaultLogger}()
+
+			got := defaultLogger.isInitialized()
+			expected := false
+			if got != expected {
+				t.Errorf("isInitialized returned %v. wanted: %v", got, expected)
+			}
+	})
+}
+
 func TestWithoutInitialization(t *testing.T) {
-	// TODO: function body
+	t.Run("Logging with Error(), without Initialization, should log a static warning msg and not the input msg",
+		func(t *testing.T) {
+			oldDefaultLogger := defaultLogger
+			ResetForTests()
+			defer func() {defaultLogger = oldDefaultLogger}()
+
+			var b bytes.Buffer
+			log.SetOutput(&b)
+			msg := "Dummy Error"
+			Error(msg)
+			got := b.String()
+			expected := "Logger not Initialized. Use the Initialize function"
+			if !strings.Contains(got, expected) {
+				t.Errorf("got and want differ!\ngot: %s\nwant: %s", got, expected)
+			}
+			if strings.Contains(got, msg){
+				t.Errorf("got should not contain the msg\ngot: %s\nmsg: %s", got, msg)
+			}
+	})
 }
