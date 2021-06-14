@@ -71,8 +71,13 @@ func isValidSession(r *http.Request, s data.SessionInterface)  bool{
 }
 
 func login(w http.ResponseWriter,r *http.Request) {
-	t := parseTemplateFiles("login.layout.html", "public.navbar.html", "login.html")
-	err := t.Execute(w, nil)
+	t, err := parseTemplateFiles("login.layout.html", "public.navbar.html", "login.html")
+	if err != nil{
+		writeErrorToClient("Some error occurred. Please try later.", w)
+		log.Error(err)
+		return
+	}
+	err = t.Execute(w, nil)
 	if  err != nil {
 		writeErrorToClient("Some error occurred. Please try later.", w)
 		log.Error(err)

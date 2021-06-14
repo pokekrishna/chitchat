@@ -141,7 +141,7 @@ func TestGenerateHTML(t *testing.T){
 			t.Errorf("Cannot Execute %s Template", tpl.Name())
 		}
 
-		strippedExpectedGeneratedHtml := strings.Join(strings.Fields(string(b.String())),"")
+		strippedExpectedGeneratedHtml := strings.Join(strings.Fields(b.String()),"")
 
 		w := httptest.NewRecorder()
 		defer os.Chdir(ChangeDirForTest())

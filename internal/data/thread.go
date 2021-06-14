@@ -7,11 +7,11 @@ import (
 
 type Thread struct {
 	//db        *sql.DB
-	id        int
-	uuid      string
-	topic     string
-	userId    int
-	createdAt time.Time
+	Id        int
+	Uuid      string
+	Topic     string
+	UserId    int
+	CreatedAt time.Time
 }
 
 func (a *App) Threads() ([]*Thread, error) {
@@ -28,14 +28,16 @@ func (a *App) Threads() ([]*Thread, error) {
 	// TODO : make the underlying array of a known length
 	var threads []*Thread
 	for rows.Next() {
-		th := &Thread{}
-		if err = rows.Scan(th.id,
-			th.uuid,
-			th.createdAt,
+		th := Thread{}
+		if err = rows.Scan(&th.Id,
+			&th.Uuid,
+			&th.Topic,
+			&th.UserId,
+			&th.CreatedAt,
 			); err != nil{
 			return threads, err
 		}
-		threads = append (threads, th)
+		threads = append (threads, &th)
 	}
 
 	return threads, nil
