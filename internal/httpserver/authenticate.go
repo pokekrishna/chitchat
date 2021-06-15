@@ -10,24 +10,27 @@ const (
 	cookieName = "_cookie"
 )
 
-func authenticate(u data.UserInterface) http.HandlerFunc {
+func authenticate(a *data.App) http.HandlerFunc {
 	return func (w http.ResponseWriter, r *http.Request) {
 		// user authentication here with db reconciliation
 		if err := r.ParseForm(); err != nil {
 			log.Error("Cannot parse form", err)
 		}
 
-		err := u.FindByEmail(r.PostFormValue("email"))
+		u := &data.User{
+			Email: r.PostFormValue("email"),
+		}
+		err := a.FindUserByEmail(u)
 		if err != nil {
 			msg := "Cannot find user"
 			log.Info(msg, err)
 			writeErrorToClient(msg, w)
 		}
 
-		if u.Password() == data.Encrypt(r.PostFormValue("password")) {
-			log.Info("Authentication successful for user email", u.Email())
+		if u.Password == data.Encrypt(r.PostFormValue("password")) {
+			log.Info("Authentication successful for user email", u.Email)
 			// create a session
-			s := data.NewSession(u.DB(), u)
+			s := data.NewSession(a.DB, u)
 			err := s.Create()
 			if err != nil {
 				log.Error("Cannot create session", err)

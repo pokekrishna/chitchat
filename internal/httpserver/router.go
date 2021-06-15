@@ -19,16 +19,16 @@ func Router(db *sql.DB) *mux.Router {
 	app := &data.App{
 		DB: db,
 	}
-	// TODO: is it safe to initialize models here and reuse ...
-	// TODO: ... from concurrency standpoint.
-	u := data.NewUser(db)
+
+	// TODO: Remove User and Session declaration from here
+	u := &data.User{}
 	s := data.NewSession(db, u)
 
 	indexHandler := logHandler(index(app))
 	errHandlerHandler := logHandler(errHandler(s))
 	loginHandler := logHandler(login)
 	logoutHandler := logHandler(logout(s))
-	authenticateHandler := logHandler(authenticate(u))
+	authenticateHandler := logHandler(authenticate(app))
 
 	router.HandleFunc("/", indexHandler).Methods(http.MethodGet)
 	router.HandleFunc("/err", errHandlerHandler).Methods(http.MethodGet)
