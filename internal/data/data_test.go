@@ -1,30 +1,24 @@
 package data_test
 
 import (
-	"database/sql"
+	"fmt"
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/pokekrishna/chitchat/internal/data"
+	"github.com/pokekrishna/chitchat/pkg/log"
 	"testing"
 )
 
-// db is a a global variable declared for the data_test package.
-// Although use of global variable is a design flaw, it is used
-// here because the `go test` utility does not allow more than
-// one parameter to the Test... functions other than the *testing.T
-// itself.
-var db *sql.DB
-
-func TestMain(m *testing.M){
-	// create db connection but not test it
-	var err error
-	db, err = data.Initialize()
+func init(){
+	log.Initialize(3)
+}
+// NewMock instantiates mock elements necessary for testing.
+func NewMock() (*data.App, sqlmock.Sqlmock){
+	db, mock, err := sqlmock.New()
 	if err != nil {
-		panic("cannot initialize db")
+		panic(fmt.Sprintf("error instantiating sqlmock %s", err))
 	}
-
-	cleanDB()
-	defer cleanDB()
-	m.Run()
-
+	app := &data.App{DB: db}
+	return app, mock
 }
 
 func TestCreateUUID(t *testing.T) {
@@ -39,11 +33,4 @@ func TestEncrypt(t *testing.T) {
 	if got != expected {
 		t.Errorf("got %s, expected %s", got, expected)
 	}
-}
-
-func cleanDB(){
-	u := data.NewUser(db)
-	s := data.NewSession(db, u)
-	s.DeleteAllSessions()
-	u.DeleteAllUsers()
 }

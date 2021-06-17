@@ -53,12 +53,11 @@ type session struct {
 	createdAt time.Time
 }
 
-func NewSession(db *sql.DB, u *User) SessionInterface{
+func NewSession(db *sql.DB, u *User) SessionInterface {
 	return &session{db: db, user: u}
 }
 
-
-func (a *App) FindUserByEmail(u *User) (err error){
+func (a *App) FindUserByEmail(u *User) (err error) {
 	row := a.DB.QueryRow(
 		"Select id, uuid, name, email, password, created_at FROM users where email=$1",
 		u.Email)
@@ -82,14 +81,14 @@ func (a *App)DeleteAllUsers() (rowsAffected int64, err error){
 	return
 }
 
-func (a *App) CreateUser(u *User) (err error){
-	if err = u.Validate(); err != nil{
+func (a *App) CreateUser(u *User) (err error) {
+	if err = u.Validate(); err != nil {
 		return
 	}
 
-	query := "insert INTO users (uuid, name, email, password, created_at) values ($1, $2, $3, $4, $5) returning " +
+	query := "INSERT INTO users (uuid, name, email, password, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING " +
 		"id, uuid, name, email, password, created_at"
-	stmt , err := a.DB.Prepare(query)
+	stmt, err := a.DB.Prepare(query)
 	if err != nil {
 		return
 	}
