@@ -16,9 +16,9 @@ func Initialize() (*sql.DB, error) {
 	var err error
 	log.Info("Initializing db ... ")
 	postgresConnectionURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable&connect_timeout=5",
-		config.DbUser(),config.DbPassword(),config.DbHost(), config.DbPort(), config.DbName())
+		config.DbUser(), config.DbPassword(), config.DbHost(), config.DbPort(), config.DbName())
 	db, err := sql.Open("postgres", postgresConnectionURL)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 

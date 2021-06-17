@@ -78,7 +78,7 @@ func TestIndex(t *testing.T) {
 			t.Fail()
 		}
 
-		rows := sqlmock.NewRows([] string {"id", "uuid", "topic", "user_id", "created_at"}).
+		rows := sqlmock.NewRows([]string{"id", "uuid", "topic", "user_id", "created_at"}).
 			AddRow(threads[0].Id, threads[0].Uuid, threads[0].Topic, threads[0].UserId, threads[0].CreatedAt).
 			AddRow(threads[1].Id, threads[1].Uuid, threads[1].Topic, threads[1].UserId, threads[1].CreatedAt)
 		mock.ExpectQuery("^SELECT (.+) FROM threads order by created_at desc$").WillReturnRows(rows)
@@ -104,14 +104,14 @@ func TestIndex(t *testing.T) {
 		responseBody := w.Body.Bytes()
 		strippedResponseBody := stripWhiteSpaces(string(responseBody))
 
-		if !strings.Contains(strippedResponseBody, strippedExpectedGeneratedHtml){
-			t.Errorf("Respose does not contain the expected data.\n" +
-				"Expected snippet: %s\n" +
+		if !strings.Contains(strippedResponseBody, strippedExpectedGeneratedHtml) {
+			t.Errorf("Respose does not contain the expected data.\n"+
+				"Expected snippet: %s\n"+
 				"Response received: %s", strippedExpectedGeneratedHtml, strippedResponseBody)
 		}
 	})
 }
 
 func stripWhiteSpaces(input string) string {
-	return strings.Join(strings.Fields(input),"")
+	return strings.Join(strings.Fields(input), "")
 }

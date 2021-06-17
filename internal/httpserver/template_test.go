@@ -13,15 +13,15 @@ import (
 	"time"
 )
 
-func TestGenerateHTML(t *testing.T){
+func TestGenerateHTML(t *testing.T) {
 	t.Run("Invalid filename should return error and return empty response", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		data := "testdata"
-		dummyFileName := "file"+strconv.FormatInt(time.Now().UnixNano(), 10)
+		dummyFileName := "file" + strconv.FormatInt(time.Now().UnixNano(), 10)
 
 		defer os.Chdir(ChangeDirForTest())
 		err := generateHTML(w, data, dummyFileName)
-		if err == nil{
+		if err == nil {
 			t.Errorf("Expected error but didnt get.")
 		}
 
@@ -124,7 +124,7 @@ func TestGenerateHTML(t *testing.T){
 				<script src="/static/js/bootstrap.min.js"></script>
 			</body>
 		</html>`
-		type Timestamps struct{
+		type Timestamps struct {
 			Time1, Time2 time.Time
 		}
 		ts := Timestamps{
@@ -141,18 +141,18 @@ func TestGenerateHTML(t *testing.T){
 			t.Errorf("Cannot Execute %s Template", tpl.Name())
 		}
 
-		strippedExpectedGeneratedHtml := strings.Join(strings.Fields(b.String()),"")
+		strippedExpectedGeneratedHtml := strings.Join(strings.Fields(b.String()), "")
 
 		w := httptest.NewRecorder()
 		defer os.Chdir(ChangeDirForTest())
-		if err := generateHTML(w, threads, "layout.html", "public.navbar.html","index.html"); err != nil{
+		if err := generateHTML(w, threads, "layout.html", "public.navbar.html", "index.html"); err != nil {
 			t.Errorf("valid inputs were not expecting error, got %s", err)
 		}
 
 		BodyContent := w.Body.Bytes()
-		strippedBodyContent := strings.Join(strings.Fields(string(BodyContent)),"")
+		strippedBodyContent := strings.Join(strings.Fields(string(BodyContent)), "")
 
-		if strippedExpectedGeneratedHtml != strippedBodyContent{
+		if strippedExpectedGeneratedHtml != strippedBodyContent {
 			t.Errorf("expected body content and got did not match.")
 			t.Errorf("expected:%s", string(strippedExpectedGeneratedHtml))
 			t.Errorf("got:%s", string(strippedBodyContent))

@@ -8,7 +8,7 @@ import (
 
 // errHandler displays msg from /err?msg=
 func errHandler(s data.SessionInterface) http.HandlerFunc {
-	return func (w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		// get the string from msg query parameter and display it
 		queryParams := r.URL.Query()
 		if ok := isValidSession(r, s); ok {

@@ -12,7 +12,7 @@ import (
 // TODO: ...these interfaces are so specific that they serve purpose of
 // TODO: ...only mocking and nothing else.
 // TODO: ...Figure out a way to solve this.
-type SessionInterface interface{
+type SessionInterface interface {
 	FindByUuid(Uuid string) (err error)
 	Delete() (err error)
 	Create() (err error)
@@ -28,7 +28,6 @@ type SessionInterface interface{
 	SetUuid(string)
 	SetEmail(string)
 	SetUser(*User)
-
 }
 
 type User struct {
@@ -68,10 +67,10 @@ func (a *App) FindUserByEmail(u *User) (err error) {
 	return
 }
 
-func (a *App)DeleteAllUsers() (rowsAffected int64, err error){
+func (a *App) DeleteAllUsers() (rowsAffected int64, err error) {
 	query := "delete FROM users"
 	result, err := a.DB.Exec(query)
-	if err != nil{
+	if err != nil {
 		return
 	}
 	rowsAffected, err = result.RowsAffected()
@@ -103,8 +102,8 @@ func (a *App) CreateUser(u *User) (err error) {
 	return
 }
 
-func (u *User) Validate() (err error){
-	if u.Name == ""{
+func (u *User) Validate() (err error) {
+	if u.Name == "" {
 		return &InvalidUser{Reason: "Empty Name"}
 	}
 
@@ -119,7 +118,7 @@ func (u *User) Validate() (err error){
 	return
 }
 
-func (s *session) Create()  (err error){
+func (s *session) Create() (err error) {
 	var stmt *sql.Stmt
 	query := "insert into sessions (uuid, email, user_id, created_at) values ($1, $2, $3, $4) returning id, uuid, email, created_at"
 	stmt, err = s.db.Prepare(query)
@@ -143,7 +142,7 @@ func (s *session) Create()  (err error){
 	return
 }
 
-func (s *session)FindByUuid(Uuid string) (err error) {
+func (s *session) FindByUuid(Uuid string) (err error) {
 	err = s.db.QueryRow("select id, uuid, email, user_id, created_at from sessions where uuid=$1",
 		Uuid).Scan(&s.id, &s.uuid, &s.email, s.user.Id, &s.createdAt)
 	if err != nil {
@@ -167,10 +166,10 @@ func (s *session) Delete() (err error) {
 	return
 }
 
-func (s *session)DeleteAllSessions() (rowsAffected int64, err error){
+func (s *session) DeleteAllSessions() (rowsAffected int64, err error) {
 	query := "delete FROM sessions"
 	result, err := s.db.Exec(query)
-	if err != nil{
+	if err != nil {
 		return
 	}
 	rowsAffected, err = result.RowsAffected()
@@ -180,23 +179,23 @@ func (s *session)DeleteAllSessions() (rowsAffected int64, err error){
 	return
 }
 
-func (s *session) DB() *sql.DB{
+func (s *session) DB() *sql.DB {
 	return s.db
 }
 
-func (s *session) ID() int{
+func (s *session) ID() int {
 	return s.id
 }
 
-func (s *session) Uuid() string{
+func (s *session) Uuid() string {
 	return s.uuid
 }
 
-func (s *session) Email() string{
+func (s *session) Email() string {
 	return s.email
 }
 
-func (s *session) User() *User{
+func (s *session) User() *User {
 	return s.user
 }
 

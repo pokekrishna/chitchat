@@ -11,7 +11,7 @@ const (
 )
 
 func authenticate(a *data.App) http.HandlerFunc {
-	return func (w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		// user authentication here with db reconciliation
 		if err := r.ParseForm(); err != nil {
 			log.Error("Cannot parse form", err)
@@ -51,7 +51,7 @@ func authenticate(a *data.App) http.HandlerFunc {
 }
 
 // Check if the session id is valid
-func isValidSession(r *http.Request, s data.SessionInterface)  bool{
+func isValidSession(r *http.Request, s data.SessionInterface) bool {
 	ok := false
 	// get the session from the cookie
 	cookie, err := r.Cookie(cookieName)
@@ -73,22 +73,22 @@ func isValidSession(r *http.Request, s data.SessionInterface)  bool{
 	return ok
 }
 
-func login(w http.ResponseWriter,r *http.Request) {
+func login(w http.ResponseWriter, r *http.Request) {
 	t, err := parseTemplateFiles("login.layout.html", "public.navbar.html", "login.html")
-	if err != nil{
+	if err != nil {
 		writeErrorToClient("Some error occurred. Please try later.", w)
 		log.Error(err)
 		return
 	}
 	err = t.Execute(w, nil)
-	if  err != nil {
+	if err != nil {
 		writeErrorToClient("Some error occurred. Please try later.", w)
 		log.Error(err)
 	}
 }
 
 func logout(s data.SessionInterface) http.HandlerFunc {
-	return func (w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		// invalidate session
 		// then redirect to "/"
 

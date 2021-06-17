@@ -10,12 +10,11 @@ import (
 	"runtime"
 )
 
-func writeErrorToClient(message string, w http.ResponseWriter){
+func writeErrorToClient(message string, w http.ResponseWriter) {
 	if _, err := w.Write([]byte(message)); err != nil {
 		log.Error("cannot write error message to client:", message)
 	}
 }
-
 
 // logHandler chains the called upon handler adds the logging
 // logic before returning an anonymous function.
@@ -29,12 +28,12 @@ func logHandler(handler func(http.ResponseWriter, *http.Request)) func(http.Resp
 }
 
 // Shutdown initiates graceful shutdown and can help perform clean up tasks before server shutdown
-func Shutdown(ctx context.Context, server * http.Server) error {
+func Shutdown(ctx context.Context, server *http.Server) error {
 	log.Info("Shutting down Server...")
 
 	// FUTURE: perform clean up tasks here
 
-	if err := server.Shutdown(ctx); err != nil{
+	if err := server.Shutdown(ctx); err != nil {
 		// Error from closing listeners or context error
 		log.Error("HTTP server shutdown", err)
 		return err
@@ -55,7 +54,7 @@ func Shutdown(ctx context.Context, server * http.Server) error {
 //
 // Usage:
 //	defer os.Chdir(ChangeDirForTest())
-func ChangeDirForTest() string{
+func ChangeDirForTest() string {
 	cwd, err := os.Getwd()
 	if err != nil {
 		panic("Cannot get current working directory")

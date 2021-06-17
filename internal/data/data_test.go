@@ -8,11 +8,12 @@ import (
 	"testing"
 )
 
-func init(){
+func init() {
 	log.Initialize(3)
 }
+
 // NewMock instantiates mock elements necessary for testing.
-func NewMock() (*data.App, sqlmock.Sqlmock){
+func NewMock() (*data.App, sqlmock.Sqlmock) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		panic(fmt.Sprintf("error instantiating sqlmock %s", err))

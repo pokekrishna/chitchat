@@ -13,7 +13,7 @@ func Router(db *sql.DB) *mux.Router {
 	// The following directory is relative to the location where the
 	// main program is being run from.
 	files := http.FileServer(http.Dir("internal/httpserver/static"))
-	staticHandler:= http.StripPrefix("/static/", files)
+	staticHandler := http.StripPrefix("/static/", files)
 	router.PathPrefix("/static/").HandlerFunc(logHandler(staticHandler.(http.HandlerFunc))).Methods(http.MethodGet)
 
 	app := &data.App{

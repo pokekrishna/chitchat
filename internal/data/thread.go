@@ -15,7 +15,7 @@ type Thread struct {
 }
 
 func (a *App) Threads() ([]*Thread, error) {
-	if a.DB == nil{
+	if a.DB == nil {
 		return nil, &InvalidDBConn{Reason: "db nil"}
 	}
 	rows, err := a.DB.Query("SELECT id, uuid, topic, user_id, created_at FROM threads order by created_at desc")
@@ -34,10 +34,10 @@ func (a *App) Threads() ([]*Thread, error) {
 			&th.Topic,
 			&th.UserId,
 			&th.CreatedAt,
-			); err != nil{
+		); err != nil {
 			return threads, err
 		}
-		threads = append (threads, &th)
+		threads = append(threads, &th)
 	}
 
 	return threads, nil

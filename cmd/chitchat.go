@@ -16,13 +16,13 @@ func main() {
 	signal.Notify(c, os.Interrupt)
 
 	log.Initialize(config.LogLevel())
-	db, err := data.Initialize();
+	db, err := data.Initialize()
 	if err != nil {
 		panic(err)
 	}
 
 	server := &http.Server{
-		Addr: "0.0.0.0:8888",
+		Addr:    "0.0.0.0:8888",
 		Handler: httpserver.Router(db),
 	}
 
@@ -32,7 +32,7 @@ func main() {
 	defer httpserver.Shutdown(ctx, server)
 
 	go func() {
-		if err := server.ListenAndServe(); err != http.ErrServerClosed{
+		if err := server.ListenAndServe(); err != http.ErrServerClosed {
 			log.Error("Cannot start the http server.", err)
 			os.Exit(1)
 		}

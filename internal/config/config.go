@@ -1,14 +1,13 @@
 package config
 
 const (
-	dbHost = "192.168.56.117"
-	dbPort ="5432"
-	dbName ="chitchat"
-	dbUser = "postgres"
+	dbHost     = "192.168.56.117"
+	dbPort     = "5432"
+	dbName     = "chitchat"
+	dbUser     = "postgres"
 	dbPassword = "password"
-	logLevel = 3
+	logLevel   = 3
 )
-
 
 func DbHost() string {
 	return dbHost

@@ -8,7 +8,7 @@ import (
 )
 
 func index(a *data.App) http.HandlerFunc {
-	return func (w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		threads, err := a.Threads()
 		if err != nil {
 			log.Error("Cannot get threads", err)

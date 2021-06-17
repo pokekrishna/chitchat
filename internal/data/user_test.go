@@ -14,11 +14,11 @@ func TestUser_Validate(t *testing.T) {
 	}{
 		{
 			&data.User{
-				Id:       1,
-				Uuid:	"sample-uuid-1",
-				Name:     "Peter Jones",
-				Email:    "peter@gmail.com",
-				Password: "peter_pass",
+				Id:        1,
+				Uuid:      "sample-uuid-1",
+				Name:      "Peter Jones",
+				Email:     "peter@gmail.com",
+				Password:  "peter_pass",
 				CreatedAt: time.Now(),
 			},
 			nil,
@@ -33,9 +33,9 @@ func TestUser_Validate(t *testing.T) {
 		},
 	}
 
-	for _,ut := range userTest{
+	for _, ut := range userTest {
 		got := ut.u.Validate()
-		if !enhancederror.IsEqual(got, ut.expectedErr){
+		if !enhancederror.IsEqual(got, ut.expectedErr) {
 			t.Errorf("User validation failed for user: %v", ut.u)
 			t.Errorf("%v.Validate() returned %v, expected %v.",
 				ut.u, got, ut.expectedErr)
@@ -51,11 +51,11 @@ func TestApp_CreateUser(t *testing.T) {
 	}{
 		{
 			&data.User{
-				Id:       1,
-				Uuid:	"sample-uuid-1",
-				Name:     "Peter Jones",
-				Email:    "peter@gmail.com",
-				Password: "peter_pass",
+				Id:        1,
+				Uuid:      "sample-uuid-1",
+				Name:      "Peter Jones",
+				Email:     "peter@gmail.com",
+				Password:  "peter_pass",
 				CreatedAt: time.Now(),
 			},
 			nil,
@@ -70,7 +70,7 @@ func TestApp_CreateUser(t *testing.T) {
 		},
 	}
 
-	for _, ut := range userTest{
+	for _, ut := range userTest {
 		if ut.expectedErr == nil {
 			//creating expected rows
 			rows := mock.NewRows([]string{"id", "uuid", "name", "email", "password", "created_at"}).

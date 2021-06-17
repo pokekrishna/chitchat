@@ -5,28 +5,28 @@ import (
 )
 
 const (
-	_info ="INFO:"
-	_error ="ERROR:"
-	_warn ="WARN:"
+	_info  = "INFO:"
+	_error = "ERROR:"
+	_warn  = "WARN:"
 
 	MaxLogLevel = 3
 )
 
 var (
-	defaultLogger             *logger = new(logger)
+	defaultLogger *logger = new(logger)
 
 	// Safe global variable. No data; only behavior on this type
-	defaultFallbackMetaLogger         = fallbackMetaLogger{}
+	defaultFallbackMetaLogger = fallbackMetaLogger{}
 
-	Info = makeLogger((*logger).Info)
+	Info  = makeLogger((*logger).Info)
 	Error = makeLogger((*logger).Error)
-	Warn = makeLogger((*logger).Warn)
+	Warn  = makeLogger((*logger).Warn)
 )
 
 // TODO: what are the justifications of having this interface? ...
 // TODO: ...if metaLogger interface wasn't there and only  implMetaLogger...
 // TODO: ... was there, would it cause any problem?
-type metaLogger interface{
+type metaLogger interface {
 	basePrinter(v ...interface{})
 }
 
@@ -44,11 +44,11 @@ type logger struct {
 }
 
 // implMetaLogger is a simple implementation of the metaLogger interface
-type implMetaLogger struct {}
+type implMetaLogger struct{}
 
 type fallbackMetaLogger struct{}
 
-func (fml *fallbackMetaLogger) basePrinter (v ...interface{}) {
+func (fml *fallbackMetaLogger) basePrinter(v ...interface{}) {
 	log.Println("Logger not Initialized. Use the Initialize function.")
 }
 
@@ -66,28 +66,28 @@ func (l *logger) isInitialized() bool {
 
 // TODO: why are methods exposed? starting with caps
 func (l *logger) Info(v ...interface{}) {
-	if l.isInitialized() && l.level >=3 {
+	if l.isInitialized() && l.level >= 3 {
 		l.basePrinter(_info, v)
 	}
 }
 
 func (l *logger) Error(v ...interface{}) {
-	if l.isInitialized() && l.level >=1 {
+	if l.isInitialized() && l.level >= 1 {
 		l.basePrinter(_error, v)
 	}
 }
 
 func (l *logger) Warn(v ...interface{}) {
-	if l.isInitialized() && l.level >=2 {
+	if l.isInitialized() && l.level >= 2 {
 		l.basePrinter(_warn, v)
 	}
 }
-func (m *implMetaLogger) basePrinter (v ...interface{}){
+func (m *implMetaLogger) basePrinter(v ...interface{}) {
 	log.Println(v...)
 }
 
 // makeLogger takes in a method and returns an anonymous function called on defaultLogger
-func makeLogger(fn func(l *logger, v ... interface{})) func(...interface{}) {
+func makeLogger(fn func(l *logger, v ...interface{})) func(...interface{}) {
 	return func(v ...interface{}) {
 		fn(defaultLogger, v...)
 	}
@@ -95,14 +95,14 @@ func makeLogger(fn func(l *logger, v ... interface{})) func(...interface{}) {
 
 //Initialize the package with a log `level`
 func Initialize(level int) {
-	if level < 0{
+	if level < 0 {
 		level = 0
 	} else if level > MaxLogLevel {
 		level = MaxLogLevel
 	}
 
 	// set logLevel only if it is not set already
-	if defaultLogger == nil || defaultLogger.level == 0{
+	if defaultLogger == nil || defaultLogger.level == 0 {
 		defaultLogger = &logger{
 			level:      level,
 			metaLogger: &implMetaLogger{},
@@ -113,16 +113,16 @@ func Initialize(level int) {
 	}
 }
 
-func Level() int{
+func Level() int {
 	if defaultLogger != nil {
 		return defaultLogger.level
-	} else{
+	} else {
 		return 0
 	}
 }
 
 // ResetForTests resets the package as if Initialize() was never called.
 // Convenience method for testing. This should only be called from tests.
-func ResetForTests(){
+func ResetForTests() {
 	defaultLogger = new(logger)
 }

@@ -6,7 +6,7 @@ import (
 )
 import "errors"
 
-type testcase struct{
+type testcase struct {
 	source error
 	target error
 	expect bool
@@ -70,12 +70,10 @@ var testcases = []testcase{
 	},
 }
 
-
-
 func TestIsEqual(t *testing.T) {
-	for _, tc := range testcases{
+	for _, tc := range testcases {
 		got := enhancederror.IsEqual(tc.source, tc.target)
-		if  got != tc.expect{
+		if got != tc.expect {
 			t.Errorf("IsEqual(%v,%v) returned %v, expected %v.",
 				tc.source, tc.target, got, tc.expect)
 		}
