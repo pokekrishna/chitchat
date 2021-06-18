@@ -7,21 +7,20 @@ import (
 	"net/http"
 )
 
-func index(a *data.App) http.HandlerFunc {
+func index(app *data.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		threads, err := a.Threads()
+		threads, err := app.Threads()
 		if err != nil {
 			log.Error("Cannot get threads", err)
 		}
 
-		s := data.NewSession(a.DB, nil)
-		if ok := isValidSession(r, s); ok {
+		if sess, ok := isValidSession(r, app); ok {
 			err = generateHTML(w, threads,
 				"layout.html", "private.navbar.html", "index.html")
 			if err != nil {
 				http.Redirect(w, r, fmt.Sprintf("/err?msg=%s", "Some problem occured"), 302)
 			}
-			log.Info("session validated for user email:", s.Email())
+			log.Info("session validated for user email:", sess.Email)
 		} else {
 			err = generateHTML(w, threads,
 				"layout.html", "public.navbar.html", "index.html")

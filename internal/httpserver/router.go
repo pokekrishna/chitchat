@@ -16,18 +16,12 @@ func Router(db *sql.DB) *mux.Router {
 	staticHandler := http.StripPrefix("/static/", files)
 	router.PathPrefix("/static/").HandlerFunc(logHandler(staticHandler.(http.HandlerFunc))).Methods(http.MethodGet)
 
-	app := &data.App{
-		DB: db,
-	}
-
-	// TODO: Remove User and Session declaration from here
-	u := &data.User{}
-	s := data.NewSession(db, u)
-
+	app := &data.App{DB: db}
+	
 	indexHandler := logHandler(index(app))
-	errHandlerHandler := logHandler(errHandler(s))
+	errHandlerHandler := logHandler(errHandler(app))
 	loginHandler := logHandler(login)
-	logoutHandler := logHandler(logout(s))
+	logoutHandler := logHandler(logout(app))
 	authenticateHandler := logHandler(authenticate(app))
 
 	router.HandleFunc("/", indexHandler).Methods(http.MethodGet)

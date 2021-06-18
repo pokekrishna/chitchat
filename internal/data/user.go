@@ -7,29 +7,6 @@ import (
 	"time"
 )
 
-// TODO: Something about these following interfaces ...
-// TODO: ...does not feel right. Only to mock out the db interactions...
-// TODO: ...these interfaces are so specific that they serve purpose of
-// TODO: ...only mocking and nothing else.
-// TODO: ...Figure out a way to solve this.
-type SessionInterface interface {
-	FindByUuid(Uuid string) (err error)
-	Delete() (err error)
-	Create() (err error)
-	DeleteAllSessions() (rowsAffected int64, err error)
-
-	DB() *sql.DB
-	ID() int
-	Uuid() string
-	Email() string
-	User() *User
-
-	SetID(int)
-	SetUuid(string)
-	SetEmail(string)
-	SetUser(*User)
-}
-
 type User struct {
 	Id        int
 	Uuid      string
@@ -39,22 +16,21 @@ type User struct {
 	CreatedAt time.Time
 }
 
-type session struct {
-	db   *sql.DB
-	id   int
-	uuid string
+type Session struct {
+	Id   int
+	Uuid string
 
 	// email is essentially from within user, but this field
 	// is important to Scan back the row from DB
-	email string
+	Email string
 
-	user      *User
-	createdAt time.Time
+	User      *User
+	CreatedAt time.Time
 }
 
-func NewSession(db *sql.DB, u *User) SessionInterface {
-	return &session{db: db, user: u}
-}
+//func NewSession(db *sql.DB, u *User) SessionInterface {
+//	return &Session{db: db, User: u}
+//}
 
 func (a *App) FindUserByEmail(u *User) (err error) {
 	row := a.DB.QueryRow(
@@ -118,10 +94,10 @@ func (u *User) Validate() (err error) {
 	return
 }
 
-func (s *session) Create() (err error) {
+func (a *App) CreateSession(s *Session) (err error) {
 	var stmt *sql.Stmt
 	query := "insert into sessions (uuid, email, user_id, created_at) values ($1, $2, $3, $4) returning id, uuid, email, created_at"
-	stmt, err = s.db.Prepare(query)
+	stmt, err = a.DB.Prepare(query)
 	if err != nil {
 		log.Error("Cannot prepare stmt", err)
 		return
@@ -129,46 +105,46 @@ func (s *session) Create() (err error) {
 	defer stmt.Close()
 
 	err = stmt.QueryRow(CreateUUID(),
-		s.user.Email,
-		s.user.Id,
+		s.User.Email,
+		s.User.Id,
 		time.Now(),
-	).Scan(&s.id, &s.uuid, &s.email, &s.createdAt)
+	).Scan(&s.Id, &s.Uuid, &s.Email, &s.CreatedAt)
 	if err != nil {
 		log.Error("Cannot scan back created session", err)
 		return
 	} else {
-		log.Info("Session created for user email", s.email)
+		log.Info("Session created for user email", s.Email)
 	}
 	return
 }
 
-func (s *session) FindByUuid(Uuid string) (err error) {
-	err = s.db.QueryRow("select id, uuid, email, user_id, created_at from sessions where uuid=$1",
-		Uuid).Scan(&s.id, &s.uuid, &s.email, s.user.Id, &s.createdAt)
+func (a *App) FindSessionByUuid(s *Session) (err error) {
+	err = a.DB.QueryRow("select id, uuid, email, user_id, created_at from sessions where uuid=$1",
+		s.Uuid).Scan(&s.Id, &s.Uuid, &s.Email, s.User.Id, &s.CreatedAt)
 	if err != nil {
 		return
 	}
 	return
 }
 
-func (s *session) Delete() (err error) {
+func (a *App) DeleteSession(s *Session) (err error) {
 	query := "Delete from sessions where uuid=$1"
-	stmt, err := s.db.Prepare(query)
+	stmt, err := a.DB.Prepare(query)
 	if err != nil {
 		return
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(s.uuid)
+	_, err = stmt.Exec(s.Uuid)
 	if err != nil {
 		return
 	}
 	return
 }
 
-func (s *session) DeleteAllSessions() (rowsAffected int64, err error) {
+func (a *App) DeleteAllSessions() (rowsAffected int64, err error) {
 	query := "delete FROM sessions"
-	result, err := s.db.Exec(query)
+	result, err := a.DB.Exec(query)
 	if err != nil {
 		return
 	}
@@ -177,40 +153,4 @@ func (s *session) DeleteAllSessions() (rowsAffected int64, err error) {
 		return
 	}
 	return
-}
-
-func (s *session) DB() *sql.DB {
-	return s.db
-}
-
-func (s *session) ID() int {
-	return s.id
-}
-
-func (s *session) Uuid() string {
-	return s.uuid
-}
-
-func (s *session) Email() string {
-	return s.email
-}
-
-func (s *session) User() *User {
-	return s.user
-}
-
-func (s *session) SetUuid(Uuid string) {
-	s.uuid = Uuid
-}
-
-func (s *session) SetID(Id int) {
-	s.id = Id
-}
-
-func (s *session) SetEmail(Email string) {
-	s.email = Email
-}
-
-func (s *session) SetUser(u *User) {
-	s.user = u
 }

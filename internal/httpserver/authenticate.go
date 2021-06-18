@@ -10,7 +10,7 @@ const (
 	cookieName = "_cookie"
 )
 
-func authenticate(a *data.App) http.HandlerFunc {
+func authenticate(app *data.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// user authentication here with db reconciliation
 		if err := r.ParseForm(); err != nil {
@@ -20,7 +20,7 @@ func authenticate(a *data.App) http.HandlerFunc {
 		u := &data.User{
 			Email: r.PostFormValue("email"),
 		}
-		err := a.FindUserByEmail(u)
+		err := app.FindUserByEmail(u)
 		if err != nil {
 			msg := "Cannot find user"
 			log.Info(msg, err)
@@ -30,8 +30,8 @@ func authenticate(a *data.App) http.HandlerFunc {
 		if u.Password == data.Encrypt(r.PostFormValue("password")) {
 			log.Info("Authentication successful for user email", u.Email)
 			// create a session
-			s := data.NewSession(a.DB, u)
-			err := s.Create()
+			sess := &data.Session{User: u}
+			err := app.CreateSession(sess)
 			if err != nil {
 				log.Error("Cannot create session", err)
 			}
@@ -39,7 +39,7 @@ func authenticate(a *data.App) http.HandlerFunc {
 			// create a cookie based on session
 			cookie := http.Cookie{
 				Name:     cookieName,
-				Value:    s.Uuid(),
+				Value:    sess.Uuid,
 				HttpOnly: true,
 			}
 			http.SetCookie(w, &cookie)
@@ -50,27 +50,26 @@ func authenticate(a *data.App) http.HandlerFunc {
 	}
 }
 
-// Check if the session id is valid
-func isValidSession(r *http.Request, s data.SessionInterface) bool {
-	ok := false
+// Check if the session from Cookie is valid
+func isValidSession(r *http.Request, app *data.App) (*data.Session, bool) {
 	// get the session from the cookie
 	cookie, err := r.Cookie(cookieName)
 	if err != nil {
 		log.Info("Cannot find cookie from the request object")
-		return ok
+		return nil, false
 	}
 
 	// find the session object by the uuid from the cookie
-	err = s.FindByUuid(cookie.Value)
+	s := &data.Session{Uuid: cookie.Value}
+	err = app.FindSessionByUuid(s)
 	if err != nil {
 		// there was a problem in finding the session, hence invalid session
 		// Log the error and return accordingly
 		log.Warn("Cannot find session by uuid:", cookie.Value)
-		return ok
+		return nil, false
 	} else {
-		ok = true
+		return s, true
 	}
-	return ok
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -87,14 +86,13 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func logout(s data.SessionInterface) http.HandlerFunc {
+func logout(app *data.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// invalidate session
 		// then redirect to "/"
-
-		if ok := isValidSession(r, s); ok {
+		if sess, ok := isValidSession(r, app); ok {
 			// so invalidate the session
-			err := s.Delete()
+			err := app.DeleteSession(sess)
 			if err != nil {
 				log.Error("Error deleting session from db", err)
 			}
