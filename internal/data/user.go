@@ -95,8 +95,12 @@ func (u *User) Validate() (err error) {
 }
 
 func (a *App) CreateSession(s *Session) (err error) {
+	if err = s.User.Validate(); err != nil {
+		return
+	}
 	var stmt *sql.Stmt
-	query := "insert into sessions (uuid, email, user_id, created_at) values ($1, $2, $3, $4) returning id, uuid, email, created_at"
+
+	query := "INSERT INTO sessions (uuid, email, user_id, created_at) VALUES ($1, $2, $3, $4) RETURNING id, uuid, email, created_at"
 	stmt, err = a.DB.Prepare(query)
 	if err != nil {
 		log.Error("Cannot prepare stmt", err)

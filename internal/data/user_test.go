@@ -90,3 +90,63 @@ func TestApp_CreateUser(t *testing.T) {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
+
+func TestApp_CreateSession(t *testing.T) {
+	app, mock := NewMock()
+	sessionTest := []struct {
+		desc        string
+		s           *data.Session
+		expectedErr error
+	}{
+		{
+			"InValid Session - incomplete user should return error",
+			&data.Session{
+				Id:        1,
+				Uuid:      "sample-uuid-1",
+				Email:     "peter@gmail.com",
+				User: &data.User{},
+				CreatedAt: time.Now(),
+			},
+			&data.InvalidUser{Reason: "Empty Name"},
+		},
+		{
+			"Valid Session - should return nil error",
+			&data.Session{
+				Id:        1,
+				Uuid:      "sample-uuid-1",
+				Email:     "",
+				User: &data.User{
+					Id:        10,
+					Name:      "Peter",
+					Email:     "peter@gmail.com",
+					Password:  "peter_pass",
+				},
+				CreatedAt: time.Now(),
+			},
+			nil,
+		},
+	}
+
+	for _, st := range sessionTest {
+		t.Run(st.desc, func(t *testing.T) {
+			if st.expectedErr == nil {
+				//creating expected rows
+				rows := mock.NewRows([]string{"id", "uuid", "email", "created_at"}).
+					AddRow(sessionTest[0].s.Id, sessionTest[0].s.Uuid, sessionTest[0].s.User.Email,
+						 sessionTest[0].s.CreatedAt)
+
+				ePrep := mock.ExpectPrepare("^INSERT INTO sessions (.+) VALUES (.+) RETURNING .+$")
+				eQuery := ePrep.ExpectQuery()
+				eQuery.WillReturnRows(rows)
+			}
+			if err := app.CreateSession(st.s); !enhancederror.IsEqual(err, st.expectedErr) {
+				t.Errorf("Expectations Mismatch from CreateSession(%v)\n Got: %v\n Expected: %v.",
+					st.s, err, st.expectedErr)
+			}
+		})
+	}
+
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
