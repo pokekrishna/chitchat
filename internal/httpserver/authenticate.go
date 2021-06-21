@@ -24,7 +24,7 @@ func authenticate(app *data.App) http.HandlerFunc {
 		if err != nil {
 			msg := "Cannot find user"
 			log.Info(msg, err)
-			writeErrorToClient(msg, w)
+			writeErrorToClient(msg, w, http.StatusForbidden)
 		}
 
 		if u.Password == data.Encrypt(r.PostFormValue("password")) {
@@ -75,13 +75,13 @@ func isValidSession(r *http.Request, app *data.App) (*data.Session, bool) {
 func login(w http.ResponseWriter, r *http.Request) {
 	t, err := parseTemplateFiles("login.layout.html", "public.navbar.html", "login.html")
 	if err != nil {
-		writeErrorToClient("Some error occurred. Please try later.", w)
+		writeErrorToClient("Some error occurred. Please try later.", w, http.StatusInternalServerError)
 		log.Error(err)
 		return
 	}
 	err = t.Execute(w, nil)
 	if err != nil {
-		writeErrorToClient("Some error occurred. Please try later.", w)
+		writeErrorToClient("Some error occurred. Please try later.", w, http.StatusInternalServerError)
 		log.Error(err)
 	}
 }

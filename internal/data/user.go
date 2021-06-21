@@ -34,7 +34,7 @@ type Session struct {
 
 func (a *App) FindUserByEmail(u *User) (err error) {
 	row := a.DB.QueryRow(
-		"Select id, uuid, name, email, password, created_at FROM users where email=$1",
+		"SELECT id, uuid, name, email, password, created_at FROM users WHERE email=$1",
 		u.Email)
 
 	if err = row.Scan(&u.Id, &u.Uuid, &u.Name, &u.Email, &u.Password, &u.CreatedAt); err != nil {

@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/pokekrishna/chitchat/internal/data"
 	"github.com/pokekrishna/chitchat/pkg/log"
@@ -14,13 +15,18 @@ import (
 	"time"
 )
 
-func TestIndex(t *testing.T) {
-	//m := &mockThread{}
+// NewMock instantiates mock elements necessary for testing.
+func NewMock() (*data.App, sqlmock.Sqlmock) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
-		t.Fatalf("error opening a stud db connection %s", err)
+		panic(fmt.Sprintf("error instantiating sqlmock %s", err))
 	}
 	app := &data.App{DB: db}
+	return app, mock
+}
+
+func TestIndex(t *testing.T) {
+	app, mock := NewMock()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", index(app))
 
@@ -84,7 +90,7 @@ func TestIndex(t *testing.T) {
 		mock.ExpectQuery("^SELECT (.+) FROM threads order by created_at desc$").WillReturnRows(rows)
 
 		w := httptest.NewRecorder()
-		r, err := http.NewRequest("GET", "/", nil)
+		r, err := http.NewRequest(http.MethodGet, "/", nil)
 		if err != nil {
 			t.Error("Cannot create a request", err)
 		}

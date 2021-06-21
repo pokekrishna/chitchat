@@ -10,7 +10,9 @@ import (
 	"runtime"
 )
 
-func writeErrorToClient(message string, w http.ResponseWriter) {
+// TODO: validate http status
+func writeErrorToClient(message string, w http.ResponseWriter, httpStatus int) {
+	w.WriteHeader(httpStatus)
 	if _, err := w.Write([]byte(message)); err != nil {
 		log.Error("cannot write error message to client:", message)
 	}
