@@ -12,10 +12,33 @@ import (
 
 // TODO: validate http status
 func writeErrorToClient(message string, w http.ResponseWriter, httpStatus int) {
+	if err := checkWriteHeaderCode(httpStatus); err != nil{
+		log.Error(err)
+		httpStatus = http.StatusInternalServerError // fallback status
+	}
 	w.WriteHeader(httpStatus)
 	if _, err := w.Write([]byte(message)); err != nil {
 		log.Error("cannot write error message to client:", message)
 	}
+}
+
+// checkWriteHeaderCode is inspired by https://golang.org/src/net/http/server.go
+func checkWriteHeaderCode(code int) error{
+	// Issue 22880: require valid WriteHeader status codes.
+	// For now we only enforce that it's three digits.
+	// In the future we might block things over 599 (600 and above aren't defined
+	// at https://httpwg.org/specs/rfc7231.html#status.codes)
+	// and we might block under 200 (once we have more mature 1xx support).
+	// But for now any three digits.
+	//
+	// We used to send "HTTP/1.1 000 0" on the wire in responses but there's
+	// no equivalent bogus thing we can realistically send in HTTP/2,
+	// so we'll consistently panic instead and help people find their bugs
+	// early. (We can't return an error from WriteHeader even if we wanted to.)
+	if code < 100 || code > 999 {
+		return fmt.Errorf("invalid WriteHeader code %v", code)
+	}
+	return nil
 }
 
 // logHandler chains the called upon handler adds the logging
