@@ -25,7 +25,6 @@ func (a *App) Threads() ([]*Thread, error) {
 		return nil, err
 	}
 
-	// TODO : make the underlying array of a known length
 	var threads []*Thread
 	for rows.Next() {
 		th := Thread{}

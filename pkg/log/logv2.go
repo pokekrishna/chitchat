@@ -18,14 +18,11 @@ var (
 	// Safe global variable. No data; only behavior on this type
 	defaultFallbackMetaLogger = fallbackMetaLogger{}
 
-	Info  = makeLogger((*logger).Info)
-	Error = makeLogger((*logger).Error)
-	Warn  = makeLogger((*logger).Warn)
+	Info  = makeLogger((*logger).info)
+	Error = makeLogger((*logger).error)
+	Warn  = makeLogger((*logger).warn)
 )
 
-// TODO: what are the justifications of having this interface? ...
-// TODO: ...if metaLogger interface wasn't there and only  implMetaLogger...
-// TODO: ... was there, would it cause any problem?
 type metaLogger interface {
 	basePrinter(v ...interface{})
 }
@@ -64,20 +61,19 @@ func (l *logger) isInitialized() bool {
 	return false
 }
 
-// TODO: why are methods exposed? starting with caps
-func (l *logger) Info(v ...interface{}) {
+func (l *logger) info(v ...interface{}) {
 	if l.isInitialized() && l.level >= 3 {
 		l.basePrinter(_info, v)
 	}
 }
 
-func (l *logger) Error(v ...interface{}) {
+func (l *logger) error(v ...interface{}) {
 	if l.isInitialized() && l.level >= 1 {
 		l.basePrinter(_error, v)
 	}
 }
 
-func (l *logger) Warn(v ...interface{}) {
+func (l *logger) warn(v ...interface{}) {
 	if l.isInitialized() && l.level >= 2 {
 		l.basePrinter(_warn, v)
 	}
@@ -108,7 +104,7 @@ func Initialize(level int) {
 			metaLogger: &implMetaLogger{},
 		}
 	} else {
-		defaultLogger.Warn("Package log Initialized more than once, log level remains unchanged. Level:",
+		defaultLogger.warn("Package log Initialized more than once, log level remains unchanged. Level:",
 			defaultLogger.level)
 	}
 }

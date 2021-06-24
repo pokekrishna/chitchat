@@ -27,29 +27,28 @@ func TestLogFunctions(t *testing.T) {
 		want     string
 	}{
 		{
-			// TODO: use CONST in the want fields
 			setLevel: 3,
-			logFunc:  (*logger).Info,
+			logFunc:  (*logger).info,
 			inputMsg: "foo",
-			want:     "INFO: [foo]\n",
+			want:     fmt.Sprintf("%s [%s]\n", _info, "foo"),
 		},
 		{
 			setLevel: 2,
-			logFunc:  (*logger).Info,
+			logFunc:  (*logger).info,
 			inputMsg: "bar",
 			want:     "",
 		},
 		{
 			setLevel: 1,
-			logFunc:  (*logger).Warn,
+			logFunc:  (*logger).warn,
 			inputMsg: "bar",
 			want:     "",
 		},
 		{
 			setLevel: 2,
-			logFunc:  (*logger).Warn,
+			logFunc:  (*logger).warn,
 			inputMsg: "bar",
-			want:     "WARN: [bar]\n",
+			want:     fmt.Sprintf("%s [%s]\n", _warn, "bar"),
 		},
 	}
 

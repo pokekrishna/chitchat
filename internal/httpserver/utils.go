@@ -10,7 +10,6 @@ import (
 	"runtime"
 )
 
-// TODO: validate http status
 func writeErrorToClient(message string, w http.ResponseWriter, httpStatus int) {
 	if err := checkWriteHeaderCode(httpStatus); err != nil{
 		log.Error(err)
