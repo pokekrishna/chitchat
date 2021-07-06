@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/pokekrishna/chitchat/internal/data"
 	"net/http"
+	"github.com/pokekrishna/chitchat/internal/httpserver/api/v1"
 )
 
 func Router(db *sql.DB) *mux.Router {
@@ -29,6 +30,11 @@ func Router(db *sql.DB) *mux.Router {
 	router.HandleFunc("/login", loginHandler).Methods(http.MethodGet)
 	router.HandleFunc("/logout", logoutHandler).Methods(http.MethodGet)
 	router.HandleFunc("/authenticate", authenticateHandler).Methods(http.MethodPost)
+
+	// TODO : Try using go-swagger for routes and server stubs
+	// API routes
+	threadsHandler := logHandler(v1.Threads(app))
+	router.HandleFunc("/api/v1/threads", threadsHandler).Methods(http.MethodGet)
 
 	return router
 }
