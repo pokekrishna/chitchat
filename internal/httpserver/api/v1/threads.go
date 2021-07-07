@@ -19,10 +19,13 @@ func Threads(app *data.App) http.HandlerFunc{
 		if err != nil {
 			log.Error("Cannot get threads", err)
 		}
+
 		t, err :=json.Marshal(threads)
 		if err != nil {
 			log.Error("Cannot marshal threads", err)
 		}
-		fmt.Fprint(w, t)
+
+		// TODO: Is it a design flaw to simply dump to resp from db?
+		fmt.Fprint(w, string(t))
 	})
 }

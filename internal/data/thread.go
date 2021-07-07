@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// TODO: now that Thread gets marshalled into JSON, time to add tags
 type Thread struct {
 	//db        *sql.DB
 	Id        int

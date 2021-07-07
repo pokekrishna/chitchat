@@ -5,6 +5,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/pokekrishna/chitchat/internal/data"
 	"github.com/pokekrishna/chitchat/pkg/log"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -27,26 +28,31 @@ func TestThreads(t *testing.T){
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", Threads(app))
 
-	t.Run("GET on '/threads' should return HTTP 200", func(t *testing.T) {
+	t.Run("GET on '/threads' should return HTTP 200 and json array response", func(t *testing.T) {
 		log.Initialize(1)
 		defer log.ResetForTests()
 
+		timeT1 := time.Now()
+		timeT2 := time.Now()
 		threads := []data.Thread{
 			data.Thread{
 				Id:        1,
 				Uuid:      "uuid-sample-1",
 				Topic:     "topic1",
 				UserId:    2,
-				CreatedAt: time.Now(),
+				CreatedAt: timeT1,
 			},
 			data.Thread{
 				Id:        2,
 				Uuid:      "uuid-sample-2",
 				Topic:     "topic2",
 				UserId:    5,
-				CreatedAt: time.Now(),
+				CreatedAt: timeT2,
 			},
 		}
+
+		jsonThreads := fmt.Sprintf("[{\"Id\":1,\"Uuid\":\"uuid-sample-1\",\"Topic\":\"topic1\",\"UserId\":2,\"CreatedAt\":\"%s\"},{\"Id\":2,\"Uuid\":\"uuid-sample-2\",\"Topic\":\"topic2\",\"UserId\":5,\"CreatedAt\":\"%s\"}]",
+			timeT1.String(), timeT2.String())
 
 		rows := sqlmock.NewRows([]string{"id", "uuid", "topic", "user_id", "created_at"}).
 			AddRow(threads[0].Id, threads[0].Uuid, threads[0].Topic, threads[0].UserId, threads[0].CreatedAt).
@@ -62,13 +68,13 @@ func TestThreads(t *testing.T){
 		// mux.ServeHTTP helps sending the request to the handler without
 		// running a HTTP server.
 		mux.ServeHTTP(w, r)
-		if w.Code != http.StatusOK {
-			t.Error("Response code not", http.StatusOK)
-		}
+		t.Log(string(w.Body.Bytes()))
+		assert.Equal(t, http.StatusOK, w.Code, "Response code should be equal.")
+		assert.Equal(t, jsonThreads, string(w.Body.Bytes()), "Response Body should be equal")
+
 		// we make sure that all expectations were met
 		if err := mock.ExpectationsWereMet(); err != nil {
 			t.Errorf("there were unfulfilled expectations: %s", err)
 		}
-
 	})
 }

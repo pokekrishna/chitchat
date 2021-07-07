@@ -7,4 +7,5 @@ require (
 	github.com/go-openapi/errors v0.20.0
 	github.com/gorilla/mux v1.8.0
 	github.com/lib/pq v1.10.1
+	github.com/stretchr/testify v1.6.1
 )
