@@ -1,0 +1,110 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Chitchat
+  license:
+    name: MIT
+servers:
+  - url: http://chitchat.io/api/v1
+paths:
+  /threads:
+    get:
+      summary: List all threads
+      operationId: listThreads
+      tags:
+        - threads
+      parameters:
+        - name: limit
+          in: query
+          description: How many threads to return (max 100)
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: An array of threads
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Threads"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a Thread
+      operationId: createThread
+      tags:
+        - threads
+      responses:
+        '201':
+          description: Null response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /threads/{Id}:
+    get:
+      summary: Info for a specific thread
+      operationId: showThreadById
+      tags:
+        - threads
+      parameters:
+        - name: Id
+          in: path
+          required: true
+          description: The id of the thread to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Thread"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Thread:
+      type: object
+      required:
+        - Id
+        - Uuid
+        - CreatedAt
+      properties:
+        Id:
+          type: integer
+        Uuid:
+          type: string
+        Topic:
+          type: string
+        UserId:
+          type: integer
+        CreatedAt:
+          type: object
+    Threads:
+      type: array
+      items:
+        $ref: "#/components/schemas/Thread"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
