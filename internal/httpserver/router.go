@@ -32,9 +32,12 @@ func Router(db *sql.DB) *mux.Router {
 	router.HandleFunc("/authenticate", authenticateHandler).Methods(http.MethodPost)
 
 	// TODO : Try using go-swagger for routes and server stubs
+	// TODO: not checking req headers
 	// API routes
 	threadsHandler := logHandler(v1.Threads(app))
-	router.HandleFunc("/api/v1/threads", threadsHandler).Methods(http.MethodGet)
+	apiV1 := router.PathPrefix("/api/v1")
+	apiV1.Path("/threads").HandlerFunc(threadsHandler).Methods(http.MethodGet)
+	//router.HandleFunc("/api/v1/threads", threadsHandler).Methods(http.MethodGet)
 
 	return router
 }

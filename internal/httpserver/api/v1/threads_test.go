@@ -26,7 +26,7 @@ func NewMock() (*data.App, sqlmock.Sqlmock) {
 func TestThreads(t *testing.T){
 	app, mock := NewMock()
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", Threads(app))
+	mux.HandleFunc("/threads", Threads(app))
 
 	t.Run("GET on '/threads' should return HTTP 200 and json array response", func(t *testing.T) {
 		log.Initialize(1)
@@ -52,7 +52,7 @@ func TestThreads(t *testing.T){
 		}
 
 		jsonThreads := fmt.Sprintf("[{\"Id\":1,\"Uuid\":\"uuid-sample-1\",\"Topic\":\"topic1\",\"UserId\":2,\"CreatedAt\":\"%s\"},{\"Id\":2,\"Uuid\":\"uuid-sample-2\",\"Topic\":\"topic2\",\"UserId\":5,\"CreatedAt\":\"%s\"}]",
-			timeT1.String(), timeT2.String())
+			timeT1., timeT2)
 
 		rows := sqlmock.NewRows([]string{"id", "uuid", "topic", "user_id", "created_at"}).
 			AddRow(threads[0].Id, threads[0].Uuid, threads[0].Topic, threads[0].UserId, threads[0].CreatedAt).

@@ -13,6 +13,7 @@ import (
 // TODO: how to deal with multiple http methods on same model ...
 // TODO: ... like -X GET Threads, and -X POST Threads.
 
+// TODO: not setting resp headers
 func Threads(app *data.App) http.HandlerFunc{
 	return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request){
 		threads, err := app.Threads()
