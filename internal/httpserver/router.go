@@ -37,7 +37,6 @@ func Router(db *sql.DB) *mux.Router {
 	threadsHandler := logHandler(v1.Threads(app))
 	apiV1 := router.PathPrefix("/api/v1")
 	apiV1.Path("/threads").HandlerFunc(threadsHandler).Methods(http.MethodGet)
-	//router.HandleFunc("/api/v1/threads", threadsHandler).Methods(http.MethodGet)
 
 	return router
 }
