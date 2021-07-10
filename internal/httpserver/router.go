@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"github.com/gorilla/mux"
 	"github.com/pokekrishna/chitchat/internal/data"
+	"github.com/pokekrishna/chitchat/pkg/middleware"
 	"net/http"
-	"github.com/pokekrishna/chitchat/internal/httpserver/api/v1"
+	apiV1 "github.com/pokekrishna/chitchat/internal/httpserver/api/v1"
 )
 
 func Router(db *sql.DB) *mux.Router {
@@ -34,9 +35,11 @@ func Router(db *sql.DB) *mux.Router {
 	// TODO : Try using go-swagger for routes and server stubs
 	// TODO: not checking req headers
 	// API routes
-	threadsHandler := logHandler(v1.Threads(app))
-	apiV1 := router.PathPrefix("/api/v1")
-	apiV1.Path("/threads").HandlerFunc(threadsHandler).Methods(http.MethodGet)
+	threadsHandler := logHandler(apiV1.Threads(app))
+
+	apiV1Router := router.PathPrefix("/api/v1").Subrouter()
+	apiV1Router.Use(middleware.ValidateRequestHeadersAddResponseHeaders)
+	apiV1Router.HandleFunc("/threads", threadsHandler).Methods(http.MethodGet)
 
 	return router
 }
