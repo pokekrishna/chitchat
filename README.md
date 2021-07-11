@@ -14,5 +14,6 @@ Inspired by https://github.com/sausheong/gwp
 - Use sqlx for easier data interaction
 - Implement APIs, parallel to web app
 - Implement file upload and test out the context to cancel the process
-- Add more test coverage, preferably mocking.
+- Use go lint
+- Use Travis to CI
 - search for TODO in code
