@@ -25,7 +25,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    "0.0.0.0:8888",
-		Handler: httpserver.Router(db),
+		Handler: httpserver.Router(ctx, db),
 	}
 
 	log.Info("Starting Server ...")

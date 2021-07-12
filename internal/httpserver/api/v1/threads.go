@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pokekrishna/chitchat/internal/data"
+	"github.com/pokekrishna/chitchat/pkg/content"
 	"github.com/pokekrishna/chitchat/pkg/log"
 	"net/http"
 )
@@ -14,19 +15,36 @@ import (
 // TODO: ... like -X GET Threads, and -X POST Threads.
 
 // TODO: not setting resp headers
-func Threads(app *data.App) http.HandlerFunc{
-	return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request){
-		threads, err := app.Threads()
-		if err != nil {
-			log.Error("Cannot get threads", err)
-		}
+//func Threads(ctx context.Context, app *data.App) http.HandlerFunc{
+//	return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request){
+//		threads, err := app.Threads()
+//		if err != nil {
+//			log.Error("Cannot get threads", err)
+//		}
+//
+//		t, err :=json.Marshal(threads)
+//		if err != nil {
+//			log.Error("Cannot marshal threads", err)
+//		}
+//
+//		// TODO: Is it a design flaw to simply dump to resp from db?
+//		fmt.Fprint(w, string(t))
+//	})
+//}
 
-		t, err :=json.Marshal(threads)
-		if err != nil {
-			log.Error("Cannot marshal threads", err)
-		}
+func Threads(app *data.App, w http.ResponseWriter, r *http.Request) {
+	// TODO: make use of ctx
+	log.Info("r.Context().Value(content.KeyAcceptContentType)", r.Context().Value(content.KeyAcceptContentType))
+	threads, err := app.Threads()
+	if err != nil {
+		log.Error("Cannot get threads", err)
+	}
 
-		// TODO: Is it a design flaw to simply dump to resp from db?
-		fmt.Fprint(w, string(t))
-	})
+	t, err :=json.Marshal(threads)
+	if err != nil {
+		log.Error("Cannot marshal threads", err)
+	}
+
+	// TODO: Is it a design flaw to simply dump to resp from db?
+	fmt.Fprint(w, string(t))
 }
