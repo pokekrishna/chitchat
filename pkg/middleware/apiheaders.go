@@ -9,12 +9,12 @@ import (
 )
 
 func CheckRequestHeadersMiddleware(ctx context.Context) mux.MiddlewareFunc {
-	return mux.MiddlewareFunc(func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := CheckAcceptHeader(ctx, r)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
-	})
+	}
 }
 
 // TODO: Complete implementation and add docs
@@ -28,7 +28,10 @@ func AddResponseHeadersMiddleware(next http.Handler) http.Handler {
 
 // TODO: complete implementation
 func CheckAcceptHeader(parentCtx context.Context, r *http.Request) context.Context {
-	headerVal := r.Header.Get("Accept")
+	var headerVal string
+	if headerVal = r.Header.Get("Accept"); headerVal == ""{
+		return context.WithValue(parentCtx, content.KeyAcceptContentType, content.TypeNotSupported)
+	}
 	return context.WithValue(parentCtx, content.KeyAcceptContentType, headerVal)
 	// switch r.contenttype
 	// case content.Typenotsupport

@@ -21,6 +21,6 @@ func (c *Context) UnsupportedContentType() bool {
 	return false
 }
 
-func ContextWithSupportedContentType(parent context.Context, contentType string) context.Context {
+func ContextWithSupportedContentType (parent context.Context, contentType string) context.Context {
 	return &Context{context.WithValue(parent, KeyAcceptContentType, contentType)}
 }

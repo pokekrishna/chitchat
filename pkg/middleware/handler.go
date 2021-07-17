@@ -12,17 +12,17 @@ type WorkerFunc func(*data.App, http.ResponseWriter, *http.Request)
 
 type Handler struct{
 	app *data.App
-	hf  WorkerFunc
+	wf  WorkerFunc
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.hf(h.app, w, r)
+	h.wf(h.app, w, r)
 }
 
 // Need this constructor so that a WorkerFunc can be adapted to http.Handler
 func NewHandler(app *data.App, hf WorkerFunc) *Handler{
 	return &Handler{
 		app: app,
-		hf: hf,
+		wf:  hf,
 	}
 }
