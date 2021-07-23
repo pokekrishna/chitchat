@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"github.com/pokekrishna/chitchat/pkg/log"
 	"time"
 )
 
@@ -20,9 +21,12 @@ func (a *App) Threads() ([]*Thread, error) {
 		return nil, &InvalidDBConn{Reason: "db nil"}
 	}
 	rows, err := a.DB.Query("SELECT id, uuid, topic, user_id, created_at FROM threads order by created_at desc")
+	if rows == nil{
+		return nil, fmt.Errorf("returned 'rows' is nil")
+	}
 	defer rows.Close()
 	if err != nil {
-		fmt.Println("flag1", err)
+		log.Error(err)
 		return nil, err
 	}
 

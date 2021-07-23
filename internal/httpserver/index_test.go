@@ -25,6 +25,8 @@ func NewMock() (*data.App, sqlmock.Sqlmock) {
 	return app, mock
 }
 
+// TODO: mux needs to be NewRouter() so that testing is done on real path.
+
 func TestIndex(t *testing.T) {
 	app, mock := NewMock()
 	mux := http.NewServeMux()

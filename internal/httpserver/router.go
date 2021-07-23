@@ -1,14 +1,16 @@
 package httpserver
 
 import (
+	"context"
 	"database/sql"
 	"github.com/gorilla/mux"
 	"github.com/pokekrishna/chitchat/internal/data"
+	"github.com/pokekrishna/chitchat/pkg/middleware"
 	"net/http"
-	"github.com/pokekrishna/chitchat/internal/httpserver/api/v1"
+	apiV1 "github.com/pokekrishna/chitchat/internal/httpserver/api/v1"
 )
 
-func Router(db *sql.DB) *mux.Router {
+func Router(ctx context.Context, db *sql.DB) *mux.Router {
 	router := mux.NewRouter()
 
 	// The following directory is relative to the location where the
@@ -32,9 +34,16 @@ func Router(db *sql.DB) *mux.Router {
 	router.HandleFunc("/authenticate", authenticateHandler).Methods(http.MethodPost)
 
 	// TODO : Try using go-swagger for routes and server stubs
+	// TODO: not checking req headers
 	// API routes
-	threadsHandler := logHandler(v1.Threads(app))
-	router.HandleFunc("/api/v1/threads", threadsHandler).Methods(http.MethodGet)
+
+	// TODO: convert logHandler to mux.Middlewarefunc and add it as middleware
+	//threadsHandler := logHandler(apiV1.Threads(ctx, app))
+
+	apiV1Router := router.PathPrefix("/api/v1").Subrouter()
+	apiV1Router.Use(middleware.CheckRequestHeadersMiddleware(ctx))
+
+	apiV1Router.Handle("/threads", middleware.NewHandler(app, apiV1.Threads)).Methods(http.MethodGet)
 
 	return router
 }

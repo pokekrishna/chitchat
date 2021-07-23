@@ -42,7 +42,7 @@ func checkWriteHeaderCode(code int) error{
 
 // logHandler chains the called upon handler adds the logging
 // logic before returning an anonymous function.
-func logHandler(handler func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
+func logHandler(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// do logging and then call handler
 		name := runtime.FuncForPC(reflect.ValueOf(handler).Pointer()).Name()

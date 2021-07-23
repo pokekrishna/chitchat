@@ -8,7 +8,7 @@ all: test
 
 .PHONY: test
 test:
-	go test -coverprofile=$(COVERFILE) -v ./...
+	go test -coverprofile=$(COVERFILE) ./...
 	@go tool cover -html=$(COVERFILE) -o $(COVERHTML)
 	@echo ""
 	@echo "Test coverage HTML published at $(COVERHTML)"
