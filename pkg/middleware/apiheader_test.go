@@ -153,3 +153,40 @@ func TestCheckAcceptHeader(t *testing.T) {
 
 }
 
+func TestAddResponseHeadersMiddleware(t *testing.T) {
+	testcases := []struct{
+		description             string
+		headerVal              	string
+		responseBody			string
+		expectedRespContentType string
+	}{
+		{
+			description:            "Unsupported 'Accept' request header should result in Content-Type=text/plain response header",
+			headerVal:              "",
+			responseBody: 			"foobar",
+			expectedRespContentType: "text/plain",
+		},
+
+	}
+
+	for _, tc := range testcases{
+		t.Run(tc.description, func(t *testing.T) {
+			router := mux.NewRouter()
+			router.Use(AddResponseHeadersMiddleware)
+			router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+				w.Write([]byte(tc.responseBody))
+			})
+
+			w := httptest.NewRecorder()
+			rCtx := content.ContextWithSupportedType(context.Background(), tc.headerVal)
+			r, err := http.NewRequestWithContext(rCtx, http.MethodGet, "/", nil)
+			if err != nil {
+				t.Error("Cannot create request", err)
+			}
+			router.ServeHTTP(w, r)
+			assert.Equal(t, tc.expectedRespContentType, w.Header().Get("Content-type"))
+			assert.Equal(t, tc.responseBody, w.Body.String())
+		})
+	}
+}
+

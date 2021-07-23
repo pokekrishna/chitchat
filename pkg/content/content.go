@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	TypeNotSupported = ""
+	TypeNotSupported = "text/plain"
 	TypeJSON = "application/json" // RFC8259
 )
 

@@ -2,12 +2,19 @@ package middleware
 
 import (
 	"context"
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/pokekrishna/chitchat/pkg/content"
 	"net/http"
 )
 
+// CheckRequestHeadersMiddleware assesses the 'Accept' request Header and adds
+// the suitable content type in context so that the handlers do not have assess
+// the content type and can make quick decisions by using the helper methods
+// provided by content.Context.
+//
+// This middleware that scans the incoming request has a response counterpart too
+// AddResponseHeadersMiddleware which adds the response header automatically by
+// assessing the (*content.context).ContentType()
 func CheckRequestHeadersMiddleware(ctx context.Context) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -20,8 +27,14 @@ func CheckRequestHeadersMiddleware(ctx context.Context) mux.MiddlewareFunc {
 // TODO: Complete implementation and add docs
 func AddResponseHeadersMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO: this setting of content type should be based on request scoped context
-		w.Header().Set("Content-Type", fmt.Sprintf("%s", r.Context().Value(content.KeyAcceptContentType)))
+		respContentType := r.Context().Value(content.KeyAcceptContentType)
+		switch respContentType :=  respContentType.(type){
+		case string:
+			w.Header().Set("Content-Type", respContentType)
+		default:
+			// do not set content-type
+		}
+		next.ServeHTTP(w, r)
 	})
 }
 
