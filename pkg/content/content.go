@@ -2,15 +2,21 @@ package content
 
 import (
 	"context"
+	"errors"
+	"net/http"
 	"strings"
 )
 
 const (
-	TypeNotSupported = "text/plain"
+	TypeNotSupported = "text/plain; charset=utf-8"
 	TypeJSON = "application/json" // RFC8259
 )
 
 const KeyAcceptContentType = "AcceptContentType"
+
+var (
+	ErrContentContextNotFound = errors.New("content.Context Not Found in http.Request.Context tree")
+)
 
 type Context struct {
 	context.Context
@@ -27,8 +33,7 @@ func (c *Context) ContentType() string {
 }
 
 func (c *Context) UnsupportedContentType() bool {
-	val := c.ContentType()
-	if val == TypeNotSupported {
+	if c.ContentType() == TypeNotSupported {
 		return true
 	}
 	return false
@@ -51,5 +56,26 @@ func ValidateType(t string) string {
 		return TypeJSON
 	default:
 		return TypeNotSupported
+	}
+}
+
+// TODO: try to return content.Context in a crafty or idiomatic way...
+// TODO: it will help the user to access methods like UnsupportedContentType
+
+// ExtractContentType takes in a request and tries to get the content type set in
+// the request context.
+//
+// If the context tree has content.Context then the returned context type is
+// either a valid content type or TypeNotSupported, otherwise it returns an error
+// ErrContentContextNotFound indicating there was some error populating the
+// Context. In such cases caller is expected to not set any response headers
+// explicitly
+func ExtractContentType(r *http.Request) (string, error){
+	contentType := r.Context().Value(KeyAcceptContentType)
+	switch contentType :=  contentType.(type){
+	case string:
+		return contentType, nil
+	default:
+		return "", ErrContentContextNotFound
 	}
 }
