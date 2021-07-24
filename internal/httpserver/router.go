@@ -42,7 +42,7 @@ func Router(ctx context.Context, db *sql.DB) *mux.Router {
 
 	apiV1Router := router.PathPrefix("/api/v1").Subrouter()
 	apiV1Router.Use(middleware.CheckRequestHeadersMiddleware(ctx))
-
+	apiV1Router.Use(middleware.AddResponseHeadersMiddleware)
 	apiV1Router.Handle("/threads", middleware.NewHandler(app, apiV1.Threads)).Methods(http.MethodGet)
 
 	return router

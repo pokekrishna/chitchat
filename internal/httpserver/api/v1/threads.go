@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pokekrishna/chitchat/internal/data"
-	"github.com/pokekrishna/chitchat/pkg/content"
 	"github.com/pokekrishna/chitchat/pkg/log"
 	"net/http"
 )
@@ -34,7 +33,7 @@ import (
 
 func Threads(app *data.App, w http.ResponseWriter, r *http.Request) {
 	// TODO: make use of ctx
-	log.Info("r.Context().Value(content.KeyAcceptContentType)", r.Context().Value(content.KeyAcceptContentType))
+	
 	threads, err := app.Threads()
 	if err != nil {
 		log.Error("Cannot get threads", err)
