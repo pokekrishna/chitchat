@@ -24,7 +24,13 @@ func CheckRequestHeadersMiddleware(ctx context.Context) mux.MiddlewareFunc {
 	}
 }
 
-// TODO: Complete implementation and add docs
+// AddResponseHeadersMiddleware gets the requested content type from the request
+// context, set previously by CheckRequestHeadersMiddleware, and sets it in the
+// response header. In any case if request case request content type did not map
+// to support content type, do not set response content type.
+//
+// next Handler can override the response content type header only in dire need.
+// It is not advised as a general practice though.
 func AddResponseHeadersMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		respContentType := r.Context().Value(content.KeyAcceptContentType)
