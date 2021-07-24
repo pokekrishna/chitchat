@@ -164,7 +164,7 @@ func TestAddResponseHeadersMiddleware(t *testing.T) {
 			description:            "Unsupported 'Accept' request header should result in Content-Type=text/plain response header",
 			headerVal:              "",
 			responseBody: 			"foobar",
-			expectedRespContentType: "text/plain",
+			expectedRespContentType: "text/plain; charset=utf-8",
 		},
 
 	}

@@ -33,11 +33,11 @@ func CheckRequestHeadersMiddleware(ctx context.Context) mux.MiddlewareFunc {
 // It is not advised as a general practice though.
 func AddResponseHeadersMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		respContentType := r.Context().Value(content.KeyAcceptContentType)
-		switch respContentType :=  respContentType.(type){
-		case string:
+		respContentType, err := content.ExtractContentType(r)
+		if err == nil {
+			// TODO: Header().Set may not be the recommended way. see w.Write()
 			w.Header().Set("Content-Type", respContentType)
-		default:
+		} else if err == content.ErrContentContextNotFound {
 			// do not set content-type
 		}
 		next.ServeHTTP(w, r)
