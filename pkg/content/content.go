@@ -8,6 +8,8 @@ import (
 )
 
 const (
+	// TODO: Does that mean text / plain is not really supported but only used as ...
+	// TODO: ... fallback? (say somebody requests 'accept: text/pla...' vs 'accept: cat'
 	TypeNotSupported = "text/plain; charset=utf-8"
 	TypeJSON = "application/json" // RFC8259
 )

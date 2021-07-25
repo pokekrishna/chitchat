@@ -2,7 +2,6 @@ package v1
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/pokekrishna/chitchat/internal/data"
 	"github.com/pokekrishna/chitchat/pkg/content"
 	"github.com/pokekrishna/chitchat/pkg/log"
@@ -28,7 +27,10 @@ func Threads(app *data.App, w http.ResponseWriter, r *http.Request) {
 			log.Error("Cannot marshal threads", err)
 		}
 	}
+
 	// TODO: Is it a design flaw to simply dump to resp from db?
-	// TODO: [P1] : change Fprint to w.Write()
-	fmt.Fprint(w, string(respBody))
+	_, err = w.Write(respBody)
+	if err != nil {
+		log.Error("Error writing to response", err)
+	}
 }

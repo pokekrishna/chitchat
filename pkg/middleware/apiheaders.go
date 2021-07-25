@@ -34,11 +34,11 @@ func CheckRequestHeadersMiddleware(ctx context.Context) mux.MiddlewareFunc {
 func AddResponseHeadersMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		respContentType, err := content.ExtractContentType(r)
-		if err == nil {
-			// TODO: Header().Set may not be the recommended way. see w.Write()
+		if err != nil {
+			// do not set content-type but set error code
+			w.WriteHeader(http.StatusUnsupportedMediaType)
+		} else {
 			w.Header().Set("Content-Type", respContentType)
-		} else if err == content.ErrContentContextNotFound {
-			// do not set content-type
 		}
 		next.ServeHTTP(w, r)
 	})
