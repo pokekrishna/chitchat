@@ -44,8 +44,6 @@ func AddResponseHeadersMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-
-// TODO: complete implementation
 func CheckAcceptHeader(parentCtx context.Context, r *http.Request) context.Context {
 	headerVal := r.Header.Get("Accept")
 	return content.ContextWithSupportedType(parentCtx, headerVal)

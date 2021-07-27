@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/pokekrishna/chitchat/internal/data"
+	"github.com/pokekrishna/chitchat/pkg/log"
 	"net/http"
 )
 // TODO: complete docs of the types and methods of this file
@@ -25,4 +27,13 @@ func NewHandler(app *data.App, hf WorkerFunc) *Handler{
 		app: app,
 		wf:  hf,
 	}
+}
+
+func LoggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+		// TODO: Current logging is not sufficient. Implement String Interface...
+		// TODO: ... on middleware.Handler
+		log.Info(fmt.Sprintf("Handler called - %#v", next))
+		next.ServeHTTP(w, r)
+	})
 }
