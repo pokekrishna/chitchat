@@ -159,16 +159,16 @@ func TestAddResponseHeadersMiddleware(t *testing.T) {
 		headerVal              	string
 		responseBody			string
 		expectedRespContentType string
+		expectedRespCode int
 	}{
 		{
 			description:            "Unsupported 'Accept' request header should result in Content-Type=text/plain response header",
 			headerVal:              "",
 			responseBody: 			"foobar",
 			expectedRespContentType: "text/plain; charset=utf-8",
+			expectedRespCode: http.StatusOK,
 		},
-
 	}
-
 	for _, tc := range testcases{
 		t.Run(tc.description, func(t *testing.T) {
 			router := mux.NewRouter()
@@ -186,7 +186,31 @@ func TestAddResponseHeadersMiddleware(t *testing.T) {
 			router.ServeHTTP(w, r)
 			assert.Equal(t, tc.expectedRespContentType, w.Header().Get("Content-type"))
 			assert.Equal(t, tc.responseBody, w.Body.String())
+			assert.Equal(t, tc.expectedRespCode, w.Code)
 		})
 	}
+
+	t.Run("content.Context not set in the request context, should return code 415 with no content type ",
+		func(t *testing.T) {
+			responseBody := "foobar"
+			expectedRespContentType := ""
+			expectedRespCode := http.StatusUnsupportedMediaType
+
+			router := mux.NewRouter()
+			router.Use(AddResponseHeadersMiddleware)
+			router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+				w.Write([]byte(responseBody))
+			})
+
+			w := httptest.NewRecorder()
+			r, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "/", nil)
+			if err != nil {
+				t.Error("Cannot create request", err)
+			}
+				router.ServeHTTP(w, r)
+				assert.Equal(t, expectedRespContentType, w.Header().Get("Content-type"))
+				assert.Equal(t, responseBody, w.Body.String())
+				assert.Equal(t, expectedRespCode, w.Code)
+		})
 }
 

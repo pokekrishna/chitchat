@@ -15,5 +15,7 @@ Inspired by https://github.com/sausheong/gwp
 - Implement APIs, parallel to web app
 - Implement file upload and test out the context to cancel the process
 - Use go lint
+- Use static code check
+- Do integration testing
 - Use Travis to CI
 - search for TODO in code
