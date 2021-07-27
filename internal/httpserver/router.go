@@ -19,8 +19,10 @@ func Router(ctx context.Context, db *sql.DB) *mux.Router {
 	staticHandler := http.StripPrefix("/static/", files)
 	router.PathPrefix("/static/").HandlerFunc(logHandler(staticHandler.(http.HandlerFunc))).Methods(http.MethodGet)
 
+
 	app := &data.App{DB: db}
-	
+
+	// TODO: Currently there are two logHandlers. Converge them into one.
 	indexHandler := logHandler(index(app))
 	errHandlerHandler := logHandler(errHandler(app))
 	loginHandler := logHandler(login)
@@ -34,15 +36,12 @@ func Router(ctx context.Context, db *sql.DB) *mux.Router {
 	router.HandleFunc("/authenticate", authenticateHandler).Methods(http.MethodPost)
 
 	// TODO : Try using go-swagger for routes and server stubs
-	// TODO: not checking req headers
 	// API routes
-
-	// TODO: convert logHandler to mux.Middlewarefunc and add it as middleware
-	//threadsHandler := logHandler(apiV1.Threads(ctx, app))
 
 	apiV1Router := router.PathPrefix("/api/v1").Subrouter()
 	apiV1Router.Use(middleware.CheckRequestHeadersMiddleware(ctx))
 	apiV1Router.Use(middleware.AddResponseHeadersMiddleware)
+	apiV1Router.Use(middleware.LoggingMiddleware)
 	apiV1Router.Handle("/threads", middleware.NewHandler(app, apiV1.Threads)).Methods(http.MethodGet)
 
 	return router
