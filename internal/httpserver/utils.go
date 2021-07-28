@@ -6,8 +6,6 @@ import (
 	"github.com/pokekrishna/chitchat/pkg/log"
 	"net/http"
 	"os"
-	"reflect"
-	"runtime"
 )
 
 func writeErrorToClient(message string, w http.ResponseWriter, httpStatus int) {
@@ -38,17 +36,6 @@ func checkWriteHeaderCode(code int) error{
 		return fmt.Errorf("invalid WriteHeader code %v", code)
 	}
 	return nil
-}
-
-// logHandler chains the called upon handler adds the logging
-// logic before returning an anonymous function.
-func logHandler(handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// do logging and then call handler
-		name := runtime.FuncForPC(reflect.ValueOf(handler).Pointer()).Name()
-		log.Info(fmt.Sprintf("Handler function called - %s", name))
-		handler(w, r)
-	}
 }
 
 // Shutdown initiates graceful shutdown and can help perform clean up tasks before server shutdown

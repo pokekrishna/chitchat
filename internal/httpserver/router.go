@@ -10,34 +10,36 @@ import (
 	apiV1 "github.com/pokekrishna/chitchat/internal/httpserver/api/v1"
 )
 
+// TODO: Write tests for Router. Changing logHandler needed a lot of integration testing.
+
 func Router(ctx context.Context, db *sql.DB) *mux.Router {
 	router := mux.NewRouter()
+	app := &data.App{DB: db}
+
+	// WebApp routes
+	appRouter := router.PathPrefix("/").Subrouter()
 
 	// The following directory is relative to the location where the
 	// main program is being run from.
 	files := http.FileServer(http.Dir("internal/httpserver/static"))
 	staticHandler := http.StripPrefix("/static/", files)
-	router.PathPrefix("/static/").HandlerFunc(logHandler(staticHandler.(http.HandlerFunc))).Methods(http.MethodGet)
+	indexHandler := index(app)
+	errHandlerHandler := errHandler(app)
+	loginHandler := http.HandlerFunc(login)
+	logoutHandler := logout(app)
+	authenticateHandler := authenticate(app)
 
-
-	app := &data.App{DB: db}
-
-	// TODO: Currently there are two logHandlers. Converge them into one.
-	indexHandler := logHandler(index(app))
-	errHandlerHandler := logHandler(errHandler(app))
-	loginHandler := logHandler(login)
-	logoutHandler := logHandler(logout(app))
-	authenticateHandler := logHandler(authenticate(app))
-
-	router.HandleFunc("/", indexHandler).Methods(http.MethodGet)
-	router.HandleFunc("/err", errHandlerHandler).Methods(http.MethodGet)
-	router.HandleFunc("/login", loginHandler).Methods(http.MethodGet)
-	router.HandleFunc("/logout", logoutHandler).Methods(http.MethodGet)
-	router.HandleFunc("/authenticate", authenticateHandler).Methods(http.MethodPost)
+	appRouter.Use(middleware.LoggingMiddleware)
+	appRouter.PathPrefix("/static/").Handler(staticHandler.(http.HandlerFunc)).Methods(http.MethodGet)
+	appRouter.Handle("/", indexHandler).Methods(http.MethodGet)
+	appRouter.Handle("/err", errHandlerHandler).Methods(http.MethodGet)
+	appRouter.Handle("/login", loginHandler).Methods(http.MethodGet)
+	appRouter.Handle("/logout", logoutHandler).Methods(http.MethodGet)
+	appRouter.Handle("/authenticate", authenticateHandler).Methods(http.MethodPost)
 
 	// TODO : Try using go-swagger for routes and server stubs
-	// API routes
 
+	// API routes
 	apiV1Router := router.PathPrefix("/api/v1").Subrouter()
 	apiV1Router.Use(middleware.CheckRequestHeadersMiddleware(ctx))
 	apiV1Router.Use(middleware.AddResponseHeadersMiddleware)

@@ -5,6 +5,8 @@ import (
 	"github.com/pokekrishna/chitchat/internal/data"
 	"github.com/pokekrishna/chitchat/pkg/log"
 	"net/http"
+	"reflect"
+	"runtime"
 )
 // TODO: complete docs of the types and methods of this file
 
@@ -30,10 +32,16 @@ func NewHandler(app *data.App, hf WorkerFunc) *Handler{
 }
 
 func LoggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		// TODO: Current logging is not sufficient. Implement String Interface...
-		// TODO: ... on middleware.Handler
-		log.Info(fmt.Sprintf("Handler called - %#v", next))
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch next := next.(type) {
+		case http.HandlerFunc:
+			name := runtime.FuncForPC(reflect.ValueOf(next).Pointer()).Name()
+			log.Info(fmt.Sprintf("Handler function called - %s", name))
+		case *Handler:
+			log.Info(fmt.Sprintf("Handler called - %#v", next))
+		default:
+			log.Error("Unknown Handler called - %v", next)
+		}
 		next.ServeHTTP(w, r)
 	})
 }
